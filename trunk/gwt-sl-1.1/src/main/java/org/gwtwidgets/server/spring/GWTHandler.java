@@ -56,6 +56,18 @@ public class GWTHandler extends AbstractUrlHandlerMapping implements
 	protected boolean scanParentApplicationContext = false;
 	protected ServletConfig servletConfig;
 	protected boolean responseCompressionEnabled = true;
+	protected boolean shouldCheckPermutationStrongName = false;
+
+
+	/**
+	 * Should RPC check the permutation strong name? Disabled by default. If either the specified
+	 * {@link RPCServiceExporterFactory} or this flag is set, then checks will be enforced.
+	 * @param shouldCheckPermutationStrongName
+	 */
+	public void setShouldCheckPermutationStrongName(
+			boolean shouldCheckPermutationStrongName) {
+		this.shouldCheckPermutationStrongName = shouldCheckPermutationStrongName;
+	}
 
 	public void setResponseCompressionEnabled(boolean responseCompressionEnabled) {
 		this.responseCompressionEnabled = responseCompressionEnabled;
@@ -120,6 +132,8 @@ public class GWTHandler extends AbstractUrlHandlerMapping implements
 			exporter.setServiceInterfaces(serviceInterfaces);
 			exporter
 					.setThrowUndeclaredExceptionToServletContainer(throwUndeclaredExceptionToServletContainer);
+			if (shouldCheckPermutationStrongName)
+				exporter.setShouldCheckPermutationStrongName(true);
 			exporter.afterPropertiesSet();
 			return exporter;
 		} catch (Exception e) {

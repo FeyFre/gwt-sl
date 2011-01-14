@@ -19,6 +19,7 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.mvc.Controller;
 
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * Interface for RPC exporters.
@@ -52,4 +53,12 @@ public interface RPCServiceExporter extends Controller, InitializingBean, Servle
 	 * @param throwUndeclaredExceptionToServletContainer 
 	 */
 	void setThrowUndeclaredExceptionToServletContainer(boolean throwUndeclaredExceptionToServletContainer);
+
+	/**
+	 * Specify whether {@link RemoteServiceServlet#checkPermutationStrongName} should be invoked
+	 * for the current request. Disabled by default for backwards compatibility with older SL versions.
+	 * @param shouldCheckPermutationStrongName
+	 */
+	void setShouldCheckPermutationStrongName(boolean shouldCheckPermutationStrongName);
+
 }
