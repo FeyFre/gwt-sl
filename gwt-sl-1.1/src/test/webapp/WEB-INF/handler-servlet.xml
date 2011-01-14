@@ -31,7 +31,8 @@
 				<entry key="/extended" value-ref="ExtendedServiceTest" />
 			</map>
 		</property>
-		
+
+		<property name="shouldCheckPermutationStrongName" value="true"/>		
 		<!-- You can specify a factory for your own implementation of a Service Exporter -->   
 		<!--
 		<property name="serviceExporterFactory">
