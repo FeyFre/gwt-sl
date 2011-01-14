@@ -96,7 +96,7 @@ public class TestGilead extends BaseTest {
 			logger.info("success");
 		} catch (Throwable t) {
 			logger.error(t.getMessage(), t);
-			fail();
+			fail(t.getMessage());
 		}
 	}
 }
