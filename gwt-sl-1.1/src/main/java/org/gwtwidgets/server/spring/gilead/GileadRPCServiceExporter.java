@@ -144,6 +144,7 @@ public class GileadRPCServiceExporter extends GWTRPCServiceExporter {
 	public String invokeMethodOnService(Object service, Method targetMethod,
 			Object[] targetParameters, RPCRequest rpcRequest) throws Exception {
 
+		checkPermutationStrongName();
 		GileadRPCHelper.parseInputParameters(rpcRequest, beanManager,
 				getThreadLocalRequest().getSession(createSessionIfNotExists));
 		Object result = targetMethod.invoke(service, targetParameters);

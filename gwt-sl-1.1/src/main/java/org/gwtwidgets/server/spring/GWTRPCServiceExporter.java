@@ -101,6 +101,19 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	
 	protected int serializationFlags = AbstractSerializationStream.DEFAULT_FLAGS;
 	
+	protected boolean shouldCheckPermutationStrongName = false;
+	
+	@Override
+	protected void checkPermutationStrongName(){
+		if (shouldCheckPermutationStrongName)
+			super.checkPermutationStrongName();
+	}
+	
+	public void setShouldCheckPermutationStrongName(
+			boolean shouldCheckPermutationStrongName) {
+		this.shouldCheckPermutationStrongName = shouldCheckPermutationStrongName;
+	}
+
 	/**
 	 * Return the set serialization flags (see {@link AbstractSerializationStream#getFlags()}
 	 * @return
@@ -379,6 +392,7 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	@Override
 	public String processCall(String payload) throws SerializationException {
 		try {
+			checkPermutationStrongName();
 			// Copy & pasted & edited from the GWT 1.4.3 RPC documentation
 			RPCRequest rpcRequest = RPC.decodeRequest(payload, null, this);
 			onAfterRequestDeserialized(rpcRequest);

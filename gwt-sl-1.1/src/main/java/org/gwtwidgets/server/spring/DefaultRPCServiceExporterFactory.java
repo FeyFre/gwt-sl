@@ -26,7 +26,21 @@ public class DefaultRPCServiceExporterFactory implements RPCServiceExporterFacto
 	private boolean responseCompressionEnabled;
 	private SerializationPolicyProvider serializationPolicyProvider = new DefaultSerializationPolicyProvider();
 	private int serializationFlags = AbstractSerializationStream.DEFAULT_FLAGS;
+	private boolean shouldCheckPermutationStrongName = false;
 	
+	public boolean isShouldCheckPermutationStrongName() {
+		return shouldCheckPermutationStrongName;
+	}
+
+	/**
+	 * Should RPC check the X-GWT-Permutation headers?
+	 * @param shouldCheckStrongPermutationName
+	 */
+	public void setShouldCheckPermutationStrongName(
+			boolean shouldCheckPermutationStrongName) {
+		this.shouldCheckPermutationStrongName = shouldCheckPermutationStrongName;
+	}
+
 	public int getSerializationFlags() {
 		return serializationFlags;
 	}
@@ -54,6 +68,7 @@ public class DefaultRPCServiceExporterFactory implements RPCServiceExporterFacto
 		exporter.setCompressResponse(responseCompressionEnabled?GWTRPCServiceExporter.COMPRESSION_AUTO:GWTRPCServiceExporter.COMPRESSION_DISABLED);
 		exporter.setSerializationPolicyProvider(serializationPolicyProvider);
 		exporter.setSerializationFlags(serializationFlags);
+		exporter.setShouldCheckPermutationStrongName(shouldCheckPermutationStrongName);
 		return exporter;
 	}
 
