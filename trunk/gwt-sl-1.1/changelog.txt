@@ -1,3 +1,11 @@
+GWT-SL 1.2
+---------------------------
+* Moved project to google code https://code.google.com/p/gwt-sl/
+* Updated project dependencies to Spring 3.0.5, GWT 2.1.1
+* Allowing GWTRPCServiceExporter and GWTHandler (through DefaultRPCServiceExporterFactory) to use 
+  custom serialization policy providers
+* Support for obfuscated RPC classifiers
+
 GWT-SL 1.1c
 ---------------------------
 * GWTRPCServiceExporter implement Controller instead of RequestHandler
