@@ -186,7 +186,7 @@
 	<target name="gwtcompile" depends="compile" description="Run GWT compiler for test application">
 		<java classname="com.google.gwt.dev.Compiler" fork="true" spawn="false" failonerror="true">
 			<jvmarg line="-Xmx256M"/>
-			<arg line="-style DETAILED -war ${target.dir}/webapp/static org.gwtwidgets.server.spring.test.ClientApplication" />
+			<arg line="-style DETAILED -localWorkers 2 -war ${target.dir}/webapp/static org.gwtwidgets.server.spring.test.ClientApplication" />
 			<classpath refid="libs-for-gwtcompile" />
 		</java>
 		<move todir="${target.dir}/webapp/static">
