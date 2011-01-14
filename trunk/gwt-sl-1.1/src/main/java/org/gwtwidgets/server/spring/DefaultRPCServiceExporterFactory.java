@@ -14,6 +14,8 @@
 
 package org.gwtwidgets.server.spring;
 
+import com.google.gwt.user.client.rpc.impl.AbstractSerializationStream;
+
 /**
  * Returns for each invocation a new {@link GWTRPCServiceExporter} 
  * @author George Georgovassilis, g.georgovassilis[at]gmail.com
@@ -22,7 +24,17 @@ package org.gwtwidgets.server.spring;
 public class DefaultRPCServiceExporterFactory implements RPCServiceExporterFactory{
 
 	private boolean responseCompressionEnabled;
+	private SerializationPolicyProvider serializationPolicyProvider = new DefaultSerializationPolicyProvider();
+	private int serializationFlags = AbstractSerializationStream.DEFAULT_FLAGS;
 	
+	public int getSerializationFlags() {
+		return serializationFlags;
+	}
+
+	public void setSerializationFlags(int serializationFlags) {
+		this.serializationFlags = serializationFlags;
+	}
+
 	public void setResponseCompressionEnabled(boolean responseCompressionEnabled) {
 		this.responseCompressionEnabled = responseCompressionEnabled;
 	}
@@ -40,7 +52,18 @@ public class DefaultRPCServiceExporterFactory implements RPCServiceExporterFacto
 	public RPCServiceExporter create() {
 		GWTRPCServiceExporter exporter = new GWTRPCServiceExporter();
 		exporter.setCompressResponse(responseCompressionEnabled?GWTRPCServiceExporter.COMPRESSION_AUTO:GWTRPCServiceExporter.COMPRESSION_DISABLED);
+		exporter.setSerializationPolicyProvider(serializationPolicyProvider);
+		exporter.setSerializationFlags(serializationFlags);
 		return exporter;
+	}
+
+	public SerializationPolicyProvider getSerializationPolicyProvider() {
+		return serializationPolicyProvider;
+	}
+
+	public void setSerializationPolicyProvider(
+			SerializationPolicyProvider serializationPolicyProvider) {
+		this.serializationPolicyProvider = serializationPolicyProvider;
 	}
 
 }

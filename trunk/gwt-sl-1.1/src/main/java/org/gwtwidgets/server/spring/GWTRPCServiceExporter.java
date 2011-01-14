@@ -38,9 +38,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
+import com.google.gwt.user.client.rpc.impl.AbstractSerializationStream;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.user.server.rpc.RPC;
+import com.google.gwt.user.server.rpc.SerializationPolicy;
 
 /**
  * This component publishes an object (see {@link #setService(Object)}) as a
@@ -95,6 +97,27 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	
 	protected String beanName = "GWTRPCServiceExporter";
 	
+	protected SerializationPolicyProvider serializationPolicyProvider = new DefaultSerializationPolicyProvider();
+	
+	protected int serializationFlags = AbstractSerializationStream.DEFAULT_FLAGS;
+	
+	/**
+	 * Return the set serialization flags (see {@link AbstractSerializationStream#getFlags()}
+	 * @return
+	 */
+	public int getSerializationFlags() {
+		return serializationFlags;
+	}
+
+	/**
+	 * Set serialization flags (see {@link AbstractSerializationStream#getFlags()}. Default value is
+	 * {@link AbstractSerializationStream#DEFAULT_FLAGS}
+	 * @param serializationFlags
+	 */
+	public void setSerializationFlags(int serializationFlags) {
+		this.serializationFlags = serializationFlags;
+	}
+
 	/**
 	 * Post-processes an RPC response. Default method returns the method's argument
 	 * @param response Response
@@ -126,6 +149,24 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	protected void preprocessHTTP(HttpServletRequest request, HttpServletResponse response){
 		if (disableResponseCaching)
 			ServletUtils.disableResponseCaching(response);
+	}
+
+	/**
+	 * Returns the installed serialization policy provider. If none other was specified,
+	 * the {@link DefaultSerializationPolicyProvider} is used
+	 * @return
+	 */
+	public SerializationPolicyProvider getSerializationPolicyProvider() {
+		return serializationPolicyProvider;
+	}
+
+	/**
+	 * Assign a new serialization policy provider.
+	 * @param serializationPolicyProvider
+	 */
+	public void setSerializationPolicyProvider(
+			SerializationPolicyProvider serializationPolicyProvider) {
+		this.serializationPolicyProvider = serializationPolicyProvider;
 	}
 
 	/**
@@ -177,8 +218,8 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	protected String invokeMethodOnService(Object service, Method targetMethod, Object[] targetParameters,
 			RPCRequest rpcRequest) throws Exception {
 		Object result = targetMethod.invoke(service, targetParameters);
-		String encodedResult = RPC.encodeResponseForSuccess(rpcRequest.getMethod(), result, rpcRequest
-				.getSerializationPolicy());
+		SerializationPolicy serializationPolicy = getSerializationPolicyProvider().getSerializationPolicyForSuccess(rpcRequest, service, targetMethod, targetParameters, result);
+		String encodedResult = RPC.encodeResponseForSuccess(rpcRequest.getMethod(), result, serializationPolicy, serializationFlags);
 		return encodedResult;
 	}
 
@@ -230,8 +271,8 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	 * @throws Exception
 	 */
 	protected String encodeResponseForFailure(RPCRequest rpcRequest, Throwable cause) throws SerializationException{
-		return RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause, rpcRequest
-				.getSerializationPolicy());
+		SerializationPolicy serializationPolicy = getSerializationPolicyProvider().getSerializationPolicyForFailure(rpcRequest, service, null, null, cause);
+		return RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause, serializationPolicy);
 	}
 
 	/**
