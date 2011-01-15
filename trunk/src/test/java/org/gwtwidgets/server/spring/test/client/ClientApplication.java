@@ -33,8 +33,7 @@ import org.gwtwidgets.server.spring.test.server.ServiceTestAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HTML;
@@ -144,7 +143,7 @@ public class ClientApplication implements EntryPoint{
 
 			public void onSuccess(Integer result) {
 				log("Test1 success: " + result);
-				DeferredCommand.addCommand(new Command() {
+				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 					public void execute() {
 						testSession();
 					}
@@ -165,7 +164,7 @@ public class ClientApplication implements EntryPoint{
 
 			public void onSuccess(String result) {
 				log("Test2 success: " + result);
-				DeferredCommand.addCommand(new Command() {
+				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 					public void execute() {
 						testSessionAlt();
 					}
@@ -186,7 +185,7 @@ public class ClientApplication implements EntryPoint{
 
 			public void onSuccess(String result) {
 				log("Test3 success: (old value " + result + ")");
-				DeferredCommand.addCommand(new Command() {
+				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 					public void execute() {
 						testExpectedValue(newString);
 					}
@@ -208,7 +207,7 @@ public class ClientApplication implements EntryPoint{
 			public void onSuccess(String result) {
 				if (expectedSessionValue.equals(result)) {
 					log("Test4 success (" + result + ")");
-					DeferredCommand.addCommand(new Command() {
+					Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 						public void execute() {
 							testException();
 						}
@@ -230,12 +229,11 @@ public class ClientApplication implements EntryPoint{
 					return;
 				}
 				log("Test5 success");
-				DeferredCommand.addCommand(new Command() {
+				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 					public void execute() {
 						testCustomException();
 					}
 				});
-
 			}
 
 			public void onSuccess(Object result) {
@@ -260,7 +258,7 @@ public class ClientApplication implements EntryPoint{
 					testGWTSerialisable();
 					return;
 				}
-				DeferredCommand.addCommand(new Command() {
+				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 					public void execute() {
 						testAdd();
 					}

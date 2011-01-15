@@ -75,8 +75,7 @@ public class ResponseHeaderFilter implements Filter {
 			response.setHeader(headers[i], values[i]);
 	}
 
-	@SuppressWarnings("unchecked")
-	private int getSize(Enumeration e) {
+	private int getSize(Enumeration<?> e) {
 		int size = 0;
 		for (; e.hasMoreElements(); e.nextElement(), size++)
 			;
@@ -107,7 +106,7 @@ public class ResponseHeaderFilter implements Filter {
 			return;
 		}
 		logger.debug("ResponseHeaderFilter header mappings:");
-		Enumeration e = conf.getInitParameterNames();
+		Enumeration<String> e = conf.getInitParameterNames();
 		for (int i = 0; i < size;) {
 			String header = e.nextElement().toString();
 			if (URL_PATTERN.equals(header)) continue;

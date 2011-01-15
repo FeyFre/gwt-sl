@@ -58,10 +58,10 @@ public class HtmlStreamReader {
 		Message message = new Message();
 		String content = e.getInnerText();
 		String[] parts = content.split(",");
-		message.setContent(URL.decodeComponent(parts[0]));
+		message.setContent(URL.decodeQueryString(parts[0]));
 		for (int i = 1; i < parts.length; i++) {
 			String[] keyValuePair = parts[i].split("=");
-			message.getAttributes().put(URL.decodeComponent(keyValuePair[0]), URL.decodeComponent(keyValuePair[1]));
+			message.getAttributes().put(URL.decodeQueryString(keyValuePair[0]), URL.decodeQueryString(keyValuePair[1]));
 		}
 		message.setSerialNumber(Integer.parseInt(e.getAttribute("id")));
 		return message;

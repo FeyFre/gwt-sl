@@ -84,8 +84,7 @@ public class ReflectionUtils {
 		return classes;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static boolean isExposed(Class c) {
+	private static boolean isExposed(Class<?> c) {
 		return RemoteService.class.isAssignableFrom(c);
 	}
 
@@ -105,11 +104,10 @@ public class ReflectionUtils {
 	 * @return Method on 'service' or else a {@link NoSuchMethodException} is
 	 *         thrown
 	 */
-	@SuppressWarnings("unchecked")
-	public static Method getRPCMethod(Object target, Class[] serviceInterfaces, Method method) throws NoSuchMethodException {
+	public static Method getRPCMethod(Object target, Class<?>[] serviceInterfaces, Method method) throws NoSuchMethodException {
 		if (serviceInterfaces.length == 0)
 			return target.getClass().getMethod(method.getName(), method.getParameterTypes());
-		for (Class serviceInterface : serviceInterfaces)
+		for (Class<?> serviceInterface : serviceInterfaces)
 			try {
 				Method template = serviceInterface.getMethod(method.getName(), method.getParameterTypes());
 				return target.getClass().getMethod(template.getName(), template.getParameterTypes());
