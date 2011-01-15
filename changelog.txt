@@ -1,0 +1,192 @@
+GWT-SL 1.2
+---------------------------
+* Moved project to google code https://code.google.com/p/gwt-sl/
+* Updated project dependencies to Spring 3.0.5, GWT 2.1.1
+* Allowing GWTRPCServiceExporter and GWTHandler (through DefaultRPCServiceExporterFactory) to use 
+  custom serialization policy providers
+* Support for obfuscated RPC classifiers
+* Support checking for X-GWT-Permutation headers (thanks Josh Drummond)
+
+GWT-SL 1.1c
+---------------------------
+* GWTRPCServiceExporter implement Controller instead of RequestHandler
+* Added processResponse method to GWTRPCServiceExporter which allows postprocessing of RPC payloads
+
+GWT-SL 1.1b
+---------------------------
+* reduced loglevel in GileadRPCServiceExporter to DEBUG
+* Implemented GileadRPCServiceExporterFactory
+* Corrected comments in handler-servlet.xml
+
+GWT-SL 1.1a
+---------------------------
+* Updated dependencies to GWT 2.0.3
+
+GWT-SL 1.1
+---------------------------
+* Updated dependencies to GWT 2.0.0, Hibernate 3.3.2, Spring 3.0, Gilead 1.3
+* Corrected mistakes in documentation
+
+GWT-SL 1.0a
+---------------------------
+* Compile targets java 1.5 instead of 1.6
+* Corrected example in documentation about setting up gilead with annotations
+* GWTRPCServiceExporter & co now warn when declared in an application context instead of a servlet context.
+* GWTRPCServiceExporter & co now call onAfterResponseDeserialized
+* Fixed NPE in the GWTSpringController when no serialization policy was provided
+* Included fix for serializing Gilead domain objects in exceptions 
+
+GWT-SL 1.0
+---------------------------
+* Annotation support added. Thanks to John Chilton.
+* Added support for Gilead's dynamic proxy mode. Thanks to Bruno Marchesson. 
+* GWTRPCServiceExporter now throws undeclared exceptions to the servlet container. Can be switched off. 
+  Thanks to David Durham.
+
+* Upgraded dependencies:
+  Java 1.5
+  GWT 1.7
+  Gilead 1.2.2.598
+  jboss-serialization 1.0.3GA
+  trove 2.0.5
+  
+* Removed support for SerializationException, use regular Exceptions implementing java.io.Serializable.
+* Fix for #2711426 (NullPointerException during some error reporting & reloads)
+* GileadRPCServiceExporter used to always create servlet sessions for the stateless proxy store. 
+  Added new setter setCreateSessionIfNotExists which allows for disabling creation of new sessions.
+* Added GileadRPCServiceExporterFactory for use with GWTHandler.
+* Fixed typo in 0.1.5b changelog
+
+GWT-SL 0.1.5b
+----------------------------
+* further work on stream protocol
+* further fix for 2035066 - thanks to Daniel Spangler
+* hibernate4gwt replaced with gilead
+* added transaction support to hb4gwt example
+* upgraded dependencies:
+  gwt 1.5.3
+  spring 2.5.6
+  hibernate 3.3.1
+  junit 4.4
+  log4j 1.2.15
+  hibernate4gwt replaced with gilead 1.2.029
+  commons logging 1.1.1
+  aspectj 1.6.2
+  commons collections 3.2
+  added javassist 3.4GA, new dependency for hibernate
+  added slf4j 1.5.0, new dependency for hibernate
+  
+* new ant target "all" - alias of "package"
+* eased dependencies in tests to work with SL interfaces
+
+GWT-SL 0.1.5a
+----------------------------
+
+* Fixed example of GWTRPCServiceExporter in documentation, thanks to Martin Konzett for spotting
+* Updated dependencies to Hibernate4gwt 1.1b, thanks to Bruno Marchesson for hints on the HB4GWTRpcServiceExporter
+* Updated dependencies to GWT-1.5.2
+* Removed javassist dependency from demo project
+* Added unit tests for verification of correct RPC mapping of service that extend other service classes
+* Fixed bug in client tests that would omit calls to certain services 
+
+GWT-SL 0.1.5
+----------------------------
+
+* Added switch to RPC components for disabling response caching
+* Deprecated request/response getters in GWTSpringController
+* Added ResponseHeaderFilter for setting HTTP response headers.
+* Updated dependencies to GWT 1.5 RC1, hibernate4gwt 1.0.4, spring 2.5
+* Removed Java 1.4 support
+* Removed methods which were deprecated in previous versions from GWTRPCServiceExporter and GWTHandler
+* Fixed bug in handling of serialisable exceptions in conjunction with serialisation policy, credits to
+  Robert Schreiber for spotting and providing the fix.
+* Added some sanity checks to catch configuration mistakes
+* GWTRPCServiceExporter will log now only unchecked exceptions
+* Fixed documentation (thanks to Martin Konzett)
+
+GWT-SL 0.1.4e
+----------------------------
+
+* Bug fix in GWTHandler: The service exporter fix in 0.1.4d was revised. A RPCServiceExporterFactory 
+  is now used to generate RPCServiceExporter instances. Credits to Andrew McAllister for reporting.
+* The NoSuchMethodException which is thrown when a requested method cannot be found on the service
+  not produces a more descriptive message.
+* Fixed serialisation policy generation issue with unit tests
+* Fixed documentation bugs
+
+GWT-SL 0.1.4d
+----------------------------
+
+* Changed service exporter injection in GWTHandler from FactoryBean to RPCServiceExporter, since
+  there was no easy way of setting FactoryBeans and provided a necessary refactoring for
+  GWTRPCServiceExporter to implement an interface. Thanks to Ed for spotting this problem 
+  and providing the solution.
+* added unittest for hibernate4gwt.
+* updated hibernate4gwt to 1.0.3, spring to 2.0.8
+* fixed unit test
+* fixed comments in web.xml
+* updated build script
+* fixed copyright notices
+* restructured build process
+
+GWT-SL 0.1.4c
+----------------------------
+
+* Updated dependencies to Spring v2.0.6
+* Refactored GWTRPCServiceExporter for easier exception translation
+* Refactored GWTHandler to support GWTRPCServiceExporter object factories
+* Expanded documentation on exception translation and deployment FAQ
+* Added support for Hibernate4GWT
+* Reverted copyright notice to plain Apache License 2
+* GWTHandler is no longer a FactoryBean - caused semantics mixup when requesting "urlMapping" from application context
+* Added new tests
+* GWTRPCServiceExporter caches now reflective method lookups for a moderate gain in speed
+* Depreciated GWTRPCServiceExporter.getRequest/getResponse
+* Added setter for compression logic to GWTRPCServiceExporter 
+
+GWT-SL 0.1.4b
+----------------------------
+* Incorporated patch from Max Jonas Werner to GWTRPCServiceExporter which handles
+  java.io.Serializable Objects in RPC
+ 
+
+GWT-SL 0.1.4
+----------------------------
+* Removed javassist, cglib and the concept of runtime-weaving in general
+* Made exception wrapping default for all components
+* Duplicated 'mapping' (deprecated) as 'mappings'
+* Introduced GWTRPCServiceExporter which publishes real (interface-less) POJOs as RPC services
+* Removed the usingInstrumentation property
+* Switched entirely to commons logging
+* Changed project structure
+* Added regular documentation
+* Improved building
+* Logging more information in debug level
+* Refined method inspection
+* Rationalised unit tests
+* Fixed ReflectionUtils (thanks to Dmitri Shestakov) to compile for 1.4 JDK
+
+GWT-SL 0.1.3 b
+----------------------------
+* Fixed the build script to build demo WAR without the duplicate GWL-SL classes in both the WEB-INF/classes and gwt-sl.jar
+* defaulted the build do produce 1.5 compatible classes
+* added proper log4j setup to demo WAR
+
+
+GWT-SL 0.1.3
+----------------------------
+New features:
+
+* Added GWTController which delegates requests to encapsulated services.
+* Reworked the examples
+* Reworked the build process
+* Added build target which builds java 1.4 jars with 1.5 JDKs
+* Added changelog
+* Refactored GWTSpringController to use some common code with the new GWTController
+* Added ServletUtils helper class which allows access to the invoking thread's ServletRequest and ServletResponse
+
+Changes:
+* GWTHandler by default enables now SerializableException translation
+
+Bug fixes
+*  Added Apache License 2.0 Headers where missing
