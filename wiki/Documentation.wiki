@@ -86,60 +86,63 @@ the client application running in a browser will access this interface also (its
 `RemoteService` interface. 
 </p>
 <p>
-`ServiceTest.java :`
+{{{
+ServiceTest.java :
 
 package org.gwtwidgets.server.spring.test.server;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface ServiceTest extends RemoteService{
-public int add(int a, int b);
+  public int add(int a, int b);
 }
-
+}}}
 </p>
 <p>
 The implementation is free of any dependencies on Spring, GWT or the servlet API.
 </p>
 <p>
-`ServiceTestImpl.java :`
+
+{{{
+ServiceTestImpl.java :
 
 package org.gwtwidgets.server.spring.test.serverimpl;
 
 import org.gwtwidgets.server.spring.test.server.ServiceTest;
 
 public class ServiceTestImpl implements ServiceTest{
-public int add(int a, int b) {
-return a + b;
-}
-}
 
+  public int add(int a, int b) {
+    return a + b;
+  }
+}
+}}}
 </p>
 <p>
 This is a Spring application, so we load the Spring servlet which will export our service bean under the url `http://localhost:8080/gwtWebApp/handler/rpctest`
 </p>
 <p>
-`web.xml :`
+{{{
+web.xml :
 
-`<?xml version="1.0" encoding="UTF-8"?>`
-`<!DOCTYPE web-app SYSTEM "web-app_2_3.dtd">`
-`<web-app>`
-<i>`<!-- 
+<web-app>
+
+<!-- 
 Mapping an RPC service defined in handler-servlet.xml
--->`</i>
-`<servlet>`
-`<servlet-name>`handler`</servlet-name>`
-`<servlet-class>`
-org.springframework.web.servlet.DispatcherServlet <i> `<!--This is a Spring configuration-->`</i>
-`</servlet-class>`
-`<load-on-startup>`1`</load-on-startup>`
-`</servlet>`
+-->
 
-`<servlet-mapping>`
-`<servlet-name>`handler`</servlet-name>`
-`<url-pattern>`/handler/*`</url-pattern>`
-`</servlet-mapping>`
+<servlet>
+  <servlet-name>handler</servlet-name>`
+  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+  <servlet-name>handler</servlet-name>
+  <url-pattern>/handler/*</url-pattern>
+</servlet-mapping>
 
-`</web-app>`
+</web-app>
+}}}
 
 </p>
 <p>
@@ -147,23 +150,22 @@ Last, we define a URL handler mapping like we'd do with any regular Spring MVC a
 but a `GWTHandler` which knows how to translate RPC calls to method invocations on POJOs.
 </p>
 <p>
-`handler-servlet.xml :`
+{{{
+handler-servlet.xml :
+<beans>
+  
+  <bean class="org.gwtwidgets.server.spring.GWTHandler">
+    <property name="mappings">
+      <map>
+        <entry key="/rpctest" value-ref="RPCTest" />
+    </map>
+    </property>
+  </bean>
 
-`<?xml version="1.0" encoding="UTF-8"?>`
-`<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">`
-`<beans>`
-`<bean
-class="org.gwtwidgets.server.spring.GWTHandler"
-`<property name="mappings">`
-`<map>`
-`<entry key="/rpctest" value-ref="RPCTest" />`
-`</map>`
-`</property>`
-`</bean>`
+  <bean id="RPCTest" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceTestImpl" />
 
-`<bean id="RPCTest" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceTestImpl" />`
-`</beans>`
-
+</beans>
+}}}
 </p>
 <h2><a name="RPC"></a>3. Publishing beans as RPC services</h2>
 <p>
@@ -182,7 +184,7 @@ of that interface and a service implementation.
 <li>Create a service implementation of A</li>
 <li>Use one of the RPC publishing methods to expose your service implementation</li>
 </ul>
-Note that <i>nothing changes on the client</i>, regardless of which way you use to expose a service to RPC.
+Note that nothing changes on the client, regardless of which way you use to expose a service to RPC.
 The client does not notice whether you use plain GWT, the SL or even a PHP backend that simulates the RPC
 protocol.<p/>
 Without Spring and the SL, a regular RPC request is processed by GWT similar to this figure:<p/>
@@ -217,7 +219,7 @@ Now, with Spring and the SL, there are a few more steps which are performed by t
 The `GWTRPCServiceExporter` is the purist's take at developing services since it does not introduce any API and compile
 time dependency to your service. Essentially it is a wrapper which exports any POJO as an RPC service. In order for the
 `GWTRPCServiceExporter` to know which methods to bind to RPC, the service bean should either implement a `RemoteService`
-interface or you should provide it in the configuration. If no interface is specified, <i>all</i> methods are published to RPC
+interface or you should provide it in the configuration. If no interface is specified, all methods are published to RPC
 which should be avoided - even fundamental methods like `wait()` can provide backdoors for various denial of service
 attacks.
 </p>
@@ -226,82 +228,83 @@ Let's create a simple bean which we will later publish as a service. This exampl
 test web application and it shows a trivial bean with a method that adds two integers. Note that 
 the bean is really a POJO, it does not extend or implement any class or interface.
 </p>
-
+{{{
 package org.gwtwidgets.server.spring.test.serverimpl;
+
 public class ServiceTestPOJO {
 
 public int add(int a, int b) {
-return a + b;
+  return a + b;
 }
 ...
 }
-
+}}}
 <p>
 Next we need an interface which extends `RemoteService` and declares the methods which should be exposed
 to RPC. Since in our example we have only one, this is an easy task:
 </p>
-
+{{{
 package org.gwtwidgets.server.spring.test.server;
 
 public interface ServiceTest extends RemoteService{
 
-public int add(int a, int b);
+  public int add(int a, int b);
 
 }
-
+}}}
 
 <p>
 That leaves only the correct bean creation and URL mapping in the Spring servlet XML:
 </p>
 
-<i>
-`<!-- 
+{{{
+<!-- 
 Create POJO version of the Test service: implements only methods but does not expose any RPC interfaces 
--->`</i>
+-->
 
-`<bean id="ServiceTestPOJO" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceTestPOJO" />`
+<bean id="ServiceTestPOJO" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceTestPOJO" />
 
-<i>
-`<!-- 
+
+<!-- 
 Declaration of RPC service with the RPCServiceExporter which behaves very similar to 
 a Spring controller and needs to be mapped to URLs the same way any other Spring 
 controller is mapped...
--->`
-</i>
-`<bean id="RPCTestPOJO" class="org.gwtwidgets.server.spring.GWTRPCServiceExporter">`
-<i>
-`<!--
+-->
+
+<bean id="RPCTestPOJO" class="org.gwtwidgets.server.spring.GWTRPCServiceExporter">
+
+<!--
 Reference to the service bean which should be exported via RPC to the web.
--->`
-</i>
-`<property name="service" ref="ServiceTestPOJO" />`
-<i>
-`<!--
+-->
+
+  <property name="service" ref="ServiceTestPOJO" />
+
+<!--
 If our Test service was not a 100% pure POJO but also implemented the ServiceTest interface then
 we wouldn't have to specify it here. Note that you can provide multiple interface names, as long as
 your service has the corresponding methods with a matching signature.
--->`
-</i>
-`<property name="serviceInterfaces">`
-`<value>`
-org.gwtwidgets.server.spring.test.server.ServiceTest
-`</value>`
-`</property>`
-`</bean>`
+-->
 
-<i>
-`<!--
+  <property name="serviceInterfaces">
+    <value>
+      org.gwtwidgets.server.spring.test.server.ServiceTest
+    </value>
+  </property>
+</bean>
+
+
+<!--
 ... with a SimpleUrlHandlerMapping for instance:
--->`
-</i>
-`<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">`
-`<property name="mappings">`
-`<map>`
-`<entry key="/service" value-ref="RPCTestPOJO" />`
-`</map>`
-`</property>`
-`</bean>`
+-->
 
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <map>
+        <entry key="/service" value-ref="RPCTestPOJO" />
+      </map>
+    </property>
+  </bean>
+}}}
 
 
 <h2><a name="GWTHandler"></a>3.2 Publishing multiple beans - `GWTHandler`</h2>
@@ -317,76 +320,78 @@ a workaround even for that by providing your own implementation of a `RPCService
 <p>
 First we need the service interface from our previous example:
 </p>
-
+{{{
 package org.gwtwidgets.server.spring.test.server;
 
 public interface ServiceAdd extends RemoteService{
 
-public int add(int a, int b);
+  public int add(int a, int b);
 
 }
-
+}}}
 
 <p>
 And the corresponding implementation:
 </p>
-
+{{{
 package org.gwtwidgets.server.spring.test.serverimpl;
 
 public class ServiceAddImpl implements ServiceAdd{
+
 public int add(int a, int b) {
-return a + b;
+  return a + b;
 }
 
 }
 
+}}}
 <p>Finally the mapping:</p>
 
-`<bean id="urlMapping" class="org.gwtwidgets.server.spring.GWTHandler">`
+{{{
+<bean id="urlMapping" class="org.gwtwidgets.server.spring.GWTHandler">
 
-<i>`<!-- Supply here mappings between URLs and services. Services must implement the RemoteService interface but
-are not otherwise restricted.-->`</i>
-`<property name="mappings">`
-`<map>`
+<!-- Supply here mappings between URLs and services. Services must implement the RemoteService interface but
+are not otherwise restricted.-->
+  <property name="mappings">
+    <map>
 
-<i>`<!-- Other mappings could follow -->`</i>
-`<entry key="/add.rpc" value-ref="ServiceAdd" />`
-`</map>`
-`</property>`
-`</bean>`
+<!-- Other mappings could follow -->
+      <entry key="/add.rpc" value-ref="ServiceAdd" />
+    </map>
+</property>
+</bean>
 
-<i>`<!-- Declare service -->`</i>
-`<bean id="ServiceAdd" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceAddImpl" />`
+<!-- Declare service -->
+<bean id="ServiceAdd" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceAddImpl" />
 
-
-
+}}}
 <p>
 Annotations can also be used to publish services to URLs. Beans in the current application context 
 featuring the `GWTRequestMapping` annotation on their service interface will be picked
 up by the `GWTHandler` and mapped to the specified URL. Please note that the URL is relative
 to URL which the `GWTHandler` is already servicing:
 </p>
+{{{
+<beans>
+<bean class="org.gwtwidgets.server.spring.GWTHandler"/>
 
-`<beans>`
-`<bean class="org.gwtwidgets.server.spring.GWTHandler"/>`
+<bean id="annotatedService" class="org.gwtwidgets.server.spring.test.serverimpl.AnnotatedServiceTestImpl"/>
 
-`<bean id="annotatedService" class="org.gwtwidgets.server.spring.test.serverimpl.AnnotatedServiceTestImpl"/>`
-
-`</beans>`
+</beans>
 
 
 @GWTRequestMapping("/service")
 public interface AnnotatedService extends ServiceTest{
 
 }
-
+}}}
 <p>
 You can optionally export annotated beans from a parent application context by enabling the
 `scanParentApplicationContext` property.
 </p>
 <p>
 A sidenote on method interceptors and AOP advice: advice applied on the `GWTHandler` is 
-applied on the servlet request/response level and <i>not</i> the method invocation level of a particular service.
+applied on the servlet request/response level and not the method invocation level of a particular service.
 In this case it is applied before/after/around the RPC request handling and not around the service method
 invocation. You should carefully distinguish between advice applied on the `GWTHandler` (i.e. access
 authorisation based on session attributes) and advice applied on services (i.e. logging or transaction management).
@@ -408,32 +413,31 @@ than the other implementations, relies less on reflection and consumes less proc
 </p>
 <p>The service extends `GWTSpringController`:</p>
 
+{{{
 package org.gwtwidgets.server.spring.test.serverimpl;
 
 public class ControllerAdd extends GWTSpringController implements ServiceAdd{
 
 public int add(int a, int b) {
-return a+b;
+  return a+b;
 }
 
 }
 
-
+}}}
 
 <p>And the mapping:</p>
+{{{
+<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+<property name="mappings">
+<map>
+<entry key="/add.rpc" value-ref="ControllerAdd" />
+</map>
+</property>
+</bean>
 
-`<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">`
-`<property name="mappings">`
-`<map>`
-`<entry key="/add.rpc" value-ref="ControllerAdd" />`
-`</map>`
-`</property>`
-`</bean>`
-
-`<bean id="ControllerAdd" class="org.gwtwidgets.server.spring.test.serverimpl.ControllerAdd"/>`
-
-
-
+<bean id="ControllerAdd" class="org.gwtwidgets.server.spring.test.serverimpl.ControllerAdd"/>
+}}}
 
 <h2><a name="HowTo"></a>4. How to</h2>
 <p>
@@ -444,7 +448,7 @@ that you will find little surprises and hardly any unexpected behaviour.
 
 <h2><a name="ExceptionTranslation"></a>4.1 Exception translation</h2>
 <p>
-The term <i>Exception translation</i> in general refers to the task of converting one exception
+The term Exception translation in general refers to the task of converting one exception
 instance to an other of a different class as the program execution passes through different application 
 layers which nest the original exception in an exception relevant to the current layer. Exceptions 
 are usually nested so that the root cause lies deep in the stack trace while the exception at the 
@@ -454,7 +458,7 @@ method invocation went through.
 <p>
 By default the `GWTHandler` and the `GWTRPCServiceExporter` unwrap the immediate root
 cause of any exception and propagate it back to the client.
-In this regard they behave slightly different from previous versions which would propagate <i>the first</i>
+In this regard they behave slightly different from previous versions which would propagate the first
 `SerializableException` found in the stack trace to the client, regardless how deep in the
 stack trace it was.</p>
 <p>Exception translation is important for RPC services because only `SerializableException`s are 
@@ -464,7 +468,7 @@ you could switch off exception translation, now this it possible by overriding m
 `GWTRPCServiceExporter`.
 </p>
 <p>
-`SerializableException` is a <i>checked</i> exception and as such it does <i>not</i> cause
+`SerializableException` is a checked exception and as such it does not cause
 transactions in the exception-throwing service to be rolled back. This is best tackled either from 
 inside the service implementation (since you may want the transaction to be committed) or by declaring
 the conditions under which a transaction should be rolled back by the transaction proxy - for details on
@@ -488,34 +492,34 @@ The exceptions you throw from within the advice would be `RuntimeException`s, be
 Springs transaction management to roll-back by default any transactions and because they do not violate the
 signature of the invoked method. If the last statement looks puzzling, think of this scenario:
 </p>
-
+{{{
 class MathService {
 
 public double divide(double a, double b){
-return a / b;
+  return a / b;
 }
 }
-
+}}}
 <p>
 And an obvious advice:
 </p>
 
-
+{{{
 class DivisionByZero extends Exception{
 }
 
 class MathAdvice {
 
 public Object doAround(Object target, Method method, Object[] args){
-double b = (double)args[1];
-if (b == null) throw new DivisionByZero();
-return method.invoke(target, args);
+  double b = (double)args[1];
+  if (b == null) throw new DivisionByZero();
+    return method.invoke(target, args);
+  }
 }
-}
-
+}}}
 <p>
 This means trouble: although you have a `MathService` instance at hand (more precicely, an advised
-proxy - but that is not the invoker's concern), calling `divide(3,0)` will throw a <i>checked</i>
+proxy - but that is not the invoker's concern), calling `divide(3,0)` will throw a checked
 exception, namely `DivisionByZero`. If `DivisionByZero` was a `RuntimeException`
 the call would be fine, but now `divide`'s method signature contract is violated. Because the JVM
 will not allow that, it will wrap the exception into an 
@@ -527,18 +531,18 @@ tackled by catching an `UndeclaredThrowableException` and propagating the enclos
 client :
 </p>
 
+{{{
 public class MyGWTRPCServiceExporter extends GWTRPCServiceExporter{
 
 @Override
-protected String handleUndeclaredThrowableException(Exception e, Method targetMethod, RPCRequest rpcRequest)
-throws Exception {
-Throwable cause = e.getCause();
-String failurePayload = RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause);
-return failurePayload;
+protected String handleUndeclaredThrowableException(Exception e, Method targetMethod, RPCRequest rpcRequest) throws Exception {
+  Throwable cause = e.getCause();
+  String failurePayload = RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause);
+  return failurePayload;
 }
 
 }
-
+}}}
 <h2><a name="ServletAPI"></a>4.2 Accessing the Servlet API from inside a service</h2>
 <p>
 While not 100% in tune with the MVC pattern, it is often convenient to access the servlet
@@ -555,7 +559,7 @@ and will obviously not return correct values if used in any other than the invok
 <p>
 A simple example:
 </p>
-
+{{{
 package org.gwtwidgets.server.spring.test.serverimpl;
 
 import javax.servlet.http.HttpServletRequest;
@@ -568,21 +572,19 @@ public class ServiceTestPOJO {
 
 ...
 public String replaceAttribute(String name, String value) {
-HttpSession session = ServletUtils.getRequest().getSession(true)
-String oldValue = (String) session.getAttribute(name);
-session.setAttribute(name, value);
-return oldValue;
+  HttpSession session = ServletUtils.getRequest().getSession(true)
+  String oldValue = (String) session.getAttribute(name);
+  session.setAttribute(name, value);
+  return oldValue;
 }
-
-
 }
-
+}}}
 <p>
 It is also possible to inject the request/response pair in an IoC manner, when compile-time 
 dependency on the SL API is not desired. This approach sets the request and response to the service 
 as a thread local variable. Thus, the service implementation could look similar to:
 </p>
-
+{{{
 package org.gwtwidgets.server.spring.test.serverimpl;
 
 public class ServiceHttpRequestTestPOJOImpl{
@@ -593,54 +595,54 @@ private static ThreadLocal`<HttpServletResponse>` servletResponse = new ThreadLo
 
 ...
 
-<i>// These two setters...</i>
+// These two setters...
 public void setRequest(HttpServletRequest request) {
-servletRequest.set(request);
+  servletRequest.set(request);
 }
 
-<i>// ... must be public</i>
+// ... must be public
 public void setResponse(HttpServletResponse request) {
-servletResponse.set(request);
+  servletResponse.set(request);
 }
 
 protected HttpServletRequest getRequest() {
-return servletRequest.get();
+  return servletRequest.get();
 }
 
-<i>// That's a service method exposed to RPC</i>
+// That's a service method exposed to RPC
 public String test2(String newValue) {
-HttpSession session = getRequest().getSession();
-return (String) session.getAttribute(attrName);
+  HttpSession session = getRequest().getSession();
+  return (String) session.getAttribute(attrName);
 }
 
 }
-
+}}}
 <p>
 Now we have to create the bean that will perform the actual injection of the servlet request and response
 and glue it to the service:
 </p>
+{{{
+<!-- Target service bean -->
+<bean id="ServiceTestHTTPTarget" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceHttpRequestTestImpl" />
 
-<i>`<!-- Target service bean -->`</i>
-`<bean id="ServiceTestHTTPTarget" class="org.gwtwidgets.server.spring.test.serverimpl.ServiceHttpRequestTestImpl" />`
+<!-- Create request setter -->
 
-<i>`<!-- Create request setter -->`</i>
+<bean id="requestSetter" class="org.gwtwidgets.server.spring.RequestInjection">
+<property name="requestSetterName" value="setRequest"/>
+<property name="responseSetterName" value="setResponse"/>
+</bean>
 
-`<bean id="requestSetter" class="org.gwtwidgets.server.spring.RequestInjection">`
-`<property name="requestSetterName" value="setRequest"/>`
-`<property name="responseSetterName" value="setResponse"/>`
-`</bean>`
-
-<i>`<!-- Create Servlet API aware service -->`</i>
-`<bean id="ServiceTestHTTP" class="org.springframework.aop.framework.ProxyFactoryBean">`
-`<property name="target" ref="ServiceTestHTTPTarget"/>`
-`<property name="autodetectInterfaces" value="true"/>`
-`<property name="interceptorNames">`
-`<list>`
-`<value>`requestSetter`</value>`
-`</list>`
-`</property>`
-`</bean>`
-
+<!-- Create Servlet API aware service -->
+<bean id="ServiceTestHTTP" class="org.springframework.aop.framework.ProxyFactoryBean">
+<property name="target" ref="ServiceTestHTTPTarget"/>
+<property name="autodetectInterfaces" value="true"/>
+<property name="interceptorNames">
+<list>
+<value>requestSetter</value>
+</list>
+</property>
+</bean>
+}}}
 
 <h2><a name="Hibernate4GWT"></a>4.3 Using Gilead (Hibernate4GWT)</h2>
 <p>
@@ -649,104 +651,100 @@ Hibernate managed objects via RPC between a GWT client and a server.
 The SL incorporates Gilead via the `GileadRPCServiceExporter` which can 
 be used similar to the `GWTRPCServiceExporter`. With regard to domain objects,
 Gilead supports two modes of operation: the light entity mode where domain objects need to extend the
-`LightEntity` class and the dynamic proxy mode. For serveral reasons, you are <i>strongly</i>
+`LightEntity` class and the dynamic proxy mode. For serveral reasons, you are strongly
 advised to stick with the light entity mode, though dynamic proxy mode is possible (more on that later).
 </p>
 <h3><a name="LightEntityMode"></a>4.3.1 Light Entity Mode</h3>
 <p>
 A simple setup which uses the `GileadRPCServiceExporter` looks like this:
 </p>
-
-<i>`<!--
+{{{
+<!--
 That's the business service which returns and or accepts Hibernate managed objects.
- -->`</i>
-`<bean id="HibernateDomainService" class="org.gwtwidgets.server.spring.test.serverimpl.HibernateDomainServiceImpl">`
-`<property name="sessionFactory" ref="SessionFactory"/>`
-`</bean>`
+ -->
+<bean id="HibernateDomainService" class="org.gwtwidgets.server.spring.test.serverimpl.HibernateDomainServiceImpl">
+<property name="sessionFactory" ref="SessionFactory"/>
+</bean>
 
-<i>`<!--
+<!--
 The SL's GileadRPCServiceExporter combines Gilead's HibernateBeanManager with the
 business service and exports it's facade via RPC.
--->`</i>
+-->
 
-`<bean id="GileadRPCService" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter">`
-`<property name="sessionFactory" ref="SessionFactory" />`
-`<property name="service" ref="HibernateDomainService" />`
-`</bean>`
+<bean id="GileadRPCService" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter">
+<property name="sessionFactory" ref="SessionFactory" />
+<property name="service" ref="HibernateDomainService" />
+</bean>
 
-<i>`<!--
+<!--
 This is a simple Spring managed Hibernate session factory.
- -->`</i>
+ -->
  
-`<bean id="SessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">`
+<bean id="SessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 ...
-`</bean>`
-
+</bean>
+}}}
 
 <p>
 The same example, this time with annotated services and the `GWTHandler`:
 </p>
-
-<i>`<!-- 
+{{{
+<!-- 
 Example on how to use the GileadRPCServiceExporter which combines Gilead's (formerly hibernate4gwt)
 HibernateBeanManager with a GWTRPCServiceExporter. This servlet loads an in-memory
 HSQLDB.
--->`</i>
-`<bean
-class="org.gwtwidgets.server.spring.GWTHandler" depends-on="HibernateDomainService">`
-`<property name="serviceExporterFactory">`
-`<bean class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporterFactory">`
-`<lookup-method name="create" bean="GileadRPCServiceExporterPrototype"/>`
-`</bean>`
-`</property>`
-`</bean>`
+-->
+<bean class="org.gwtwidgets.server.spring.GWTHandler" depends-on="HibernateDomainService">
+  <property name="serviceExporterFactory">
+    <bean class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporterFactory">
+      <lookup-method name="create" bean="GileadRPCServiceExporterPrototype"/>
+    </bean>
+  </property>
+</bean>
 
-<i>`<!-- Factory for creating RPC wrappers that can serialise Hibernate managed objects -->`</i>
-`<bean id="GileadRPCServiceExporterPrototype" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter" scope="prototype">`
-`<property name="beanManager" ref="HibernateBeanManager"/>`
-<i>`<!-- Use with dynamic proxy mode 
-`<property name="usingProxyClassLoader" value="true"/>`
- -->`</i>
-`</bean>`
+<!-- Factory for creating RPC wrappers that can serialise Hibernate managed objects -->
+<bean id="GileadRPCServiceExporterPrototype" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter" scope="prototype">
+  <property name="beanManager" ref="HibernateBeanManager"/>
+<!-- Use with dynamic proxy mode 
+  <property name="usingProxyClassLoader" value="true"/>
+ -->
+</bean>
 
-<i>`<!-- This is Gilead boilerplate -->`</i>
-`<bean id="PojoStore"
-class="net.sf.gilead.core.store.stateless.StatelessProxyStore"/>`
+<!-- This is Gilead boilerplate -->
+<bean id="PojoStore" class="net.sf.gilead.core.store.stateless.StatelessProxyStore"/>
 
-`<bean id="HibernateUtil"
-class="net.sf.gilead.core.hibernate.HibernateUtil">`
-`<property name="sessionFactory" ref="SessionFactory"/>`
-`</bean>`
+<bean id="HibernateUtil" class="net.sf.gilead.core.hibernate.HibernateUtil">
+  <property name="sessionFactory" ref="SessionFactory"/>
+</bean>
 
-`<bean id="HibernateBeanManager"
-class="net.sf.gilead.core.PersistentBeanManager">`
-`<property name="proxyStore" ref="PojoStore" />`
-`<property name="persistenceUtil" ref="HibernateUtil"/>`
-<i>`<!-- Use with dynamic proxy mode 
-`<property name="classMapper" ref="ClassMapper"/>`#
- -->`</i>
-`</bean>`
+<bean id="HibernateBeanManager" class="net.sf.gilead.core.PersistentBeanManager">
+  <property name="proxyStore" ref="PojoStore" />
+  <property name="persistenceUtil" ref="HibernateUtil"/>
+<!-- Use with dynamic proxy mode 
+  <property name="classMapper" ref="ClassMapper"/>#
+ -->
+</bean>
 
-<i>`<!-- Use with dynamic proxy mode 
-`<bean id="ClassMapper" class="net.sf.gilead.core.beanlib.mapper.ProxyClassMapper">`
-`<property name="persistenceUtil" ref="HibernateUtil"/>`
-`<property name="java5" value="true"/>`
-`</bean>`
- -->`</i>
+<!-- Use with dynamic proxy mode 
+<bean id="ClassMapper" class="net.sf.gilead.core.beanlib.mapper.ProxyClassMapper">
+  <property name="persistenceUtil" ref="HibernateUtil"/>
+  <property name="java5" value="true"/>
+</bean>
+ -->
 
-<i>`<!--
+<!--
 Setup transaction handling, Sessionfactories, Datasources etc 
- -->`</i>
+ -->
 ...
 
-<i>`<!--
+<!--
 Uppon initialisation, this service adds a few entries to the mapped Hibernate database used later on
 by the client application.
- -->`</i>
-`<bean id="HibernateDomainService" class="org.gwtwidgets.server.spring.test.serverimpl.HibernateDomainServiceAnnotated">`
-`<property name="sessionFactory" ref="SessionFactory"/>`
-`</bean>`
-
+ -->
+<bean id="HibernateDomainService" class="org.gwtwidgets.server.spring.test.serverimpl.HibernateDomainServiceAnnotated">
+  <property name="sessionFactory" ref="SessionFactory"/>
+</bean>
+}}}
 <p>
 Note that for a fully functional setup transaction support should be added to the service beans.
 For complete examples consult `gilead-servlet.xml` and `gileadannotated-servlet.xml` from the test package.
@@ -768,10 +766,11 @@ A consequence of the missing serialization policy is that any DTOs or Exceptions
 <strong>Generator:</strong>
 The `*.gwt.xml` module must reference Gilead's generator:
 
-`<generate-with class="net.sf.gilead.proxy.gwt.Gwt15ProxyGenerator">`
-`<when-type-assignable class="com.google.gwt.user.client.rpc.IsSerializable" />`
-`</generate-with>`
-
+{{{
+<generate-with class="net.sf.gilead.proxy.gwt.Gwt15ProxyGenerator">
+  <when-type-assignable class="com.google.gwt.user.client.rpc.IsSerializable" />
+</generate-with>
+}}}
 </p>
 <p>
 <strong>GWT.create:</strong>
@@ -781,25 +780,25 @@ creating instances of Hibernate managed objects on the client side.
 <p>
 <strong>ProxyClassMapper:</strong>
 You need to use the `ProxyClassMapper` and tell the `GileadRPCServiceExporter` to use it.
+{{{
+<bean id="ClassMapper" class="net.sf.gilead.core.beanlib.mapper.ProxyClassMapper">
+  <property name="persistenceUtil" ref="HibernateUtil"/>
+  <property name="java5" value="true"/>
+</bean>
 
-`<bean id="ClassMapper" class="net.sf.gilead.core.beanlib.mapper.ProxyClassMapper">`
-`<property name="persistenceUtil" ref="HibernateUtil"/>`
-`<property name="java5" value="true"/>`
-`</bean>`
+<bean id="HibernateBeanManager"
+class="net.sf.gilead.core.PersistentBeanManager">
+  <property name="proxyStore" ref="PojoStore" />
+  <property name="persistenceUtil" ref="HibernateUtil"/>
+  <property name="classMapper" ref="ClassMapper"/>
+</bean>
 
-`<bean id="HibernateBeanManager"
-class="net.sf.gilead.core.PersistentBeanManager">`
-`<property name="proxyStore" ref="PojoStore" />`
-`<property name="persistenceUtil" ref="HibernateUtil"/>`
-`<property name="classMapper" ref="ClassMapper"/>`
-`</bean>`
-
-`<bean id="GileadDomainService" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter">`
-`<property name="beanManager" ref="HibernateBeanManager" />`
-`<property name="service" ref="HibernateDomainService" />`
-`<property name="usingProxyClassLoader" value="true"/>`
-`</bean>`
-
+<bean id="GileadDomainService" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter">
+  <property name="beanManager" ref="HibernateBeanManager" />
+  <property name="service" ref="HibernateDomainService" />
+  <property name="usingProxyClassLoader" value="true"/>
+</bean>
+}}}
 </p>
 
 <h2><a name="HTTPHeaders"></a>4.4 HTTP Headers</h2>
@@ -820,16 +819,16 @@ In an GWT application this will usually be the `.cache.html`, the module entry H
 
 To enable caching for a resource, something along the lines of
 </p>
-
-`<filter>`
-`<filter-name>`CachingFilter`</filter-name>`
-`<filter-class>`org.gwtwidgets.server.filters.ResponseHeaderFilter`</filter-class>`
-`<init-param>`
-`<param-name>`Expires`</param-name>`
-`<param-value>`Sun, 17 Jan 2038 19:14:07 GMT`</param-value>`
-`</init-param>`
-`</filter>`
-
+{{{
+<filter>
+  <filter-name>CachingFilter</filter-name>
+  <filter-class>org.gwtwidgets.server.filters.ResponseHeaderFilter</filter-class>
+  <init-param>
+    <param-name>Expires</param-name>
+    <param-value>Sun, 17 Jan 2038 19:14:07 GMT</param-value>
+  </init-param>
+</filter>
+}}}
 <p>
 could be used in `web.xml`
 </p>
@@ -838,24 +837,24 @@ A further interesting application is compressing of static resources such as scr
 compressed again for every request but can reside in an already compressed format on the file system. It then suffices to add the appropriate
 headers to the HTTP response in order to instruct the browser to inflate the transmitted resource:
 </p>
-
-`<filter>`
-`<filter-name>`GzipFilter`</filter-name>`
-`<filter-class>`org.gwtwidgets.server.filters.ResponseHeaderFilter`</filter-class>`
-`<init-param>`
-`<param-name>`Content-Type`</param-name>`
-`<param-value>`text/html; charset=utf-8`</param-value>`
-`</init-param>`
-`<init-param>`
-`<param-name>`Content-Encoding`</param-name>`
-`<param-value>`gzip`</param-value>`
-`</init-param>`
-`<init-param>`
-`<param-name>`ResponseHeaderFilter.UrlPattern`</param-name>`
-`<param-value>`.*?\.html`</param-value>` <i>`<!-- Match only *.html URLs -->`</i>
-`</init-param>`
-`</filter>`
-
+{{{
+<filter>
+  <filter-name>GzipFilter</filter-name>
+  <filter-class>org.gwtwidgets.server.filters.ResponseHeaderFilter</filter-class>
+  <init-param>
+    <param-name>Content-Type</param-name>
+    <param-value>text/html; charset=utf-8</param-value>
+  </init-param>
+  <init-param>
+    <param-name>Content-Encoding</param-name>
+    <param-value>gzip</param-value>
+  </init-param>
+  <init-param>
+    <param-name>ResponseHeaderFilter.UrlPattern</param-name>
+    <param-value>.*?\.html</param-value> <!-- Match only *.html URLs -->
+  </init-param>
+</filter>
+}}}
 <h2><a name="StrongNamePermutationCheck"></a>4.5 Enhance RPC security (strong name permutation check)</h2>
 <p>
 A few versions ago GWT's `RemoteServiceServlet` started checking certain `X-GWT-` headers
@@ -922,39 +921,39 @@ If you can rule out any other errors and you are not seeing any exceptions in th
 OK) your URL mappings may be incorrect. The SL hosts multiple RPC services under one or more Spring managed servlets, thus a good
 start is to check the URL mappings in `web.xml`:
 </p>
+{{{
+<servlet>
+  <servlet-name>myRPCServices</servlet-name>
+  <servlet-class>
+  org.springframework.web.servlet.DispatcherServlet
+  </servlet-class>
+  <load-on-startup>1</load-on-startup>
+</servlet>
 
-`<servlet>`
-`<servlet-name>`myRPCServices`</servlet-name>`
-`<servlet-class>`
-org.springframework.web.servlet.DispatcherServlet
-`</servlet-class>`
-`<load-on-startup>`1`</load-on-startup>`
-`</servlet>`
-
-`<servlet-mapping>`
-`<servlet-name>`myRPCServices`</servlet-name>`
-`<url-pattern>`/myRPCServicesURL/*`</url-pattern>`
-`</servlet-mapping>`
-
+<servlet-mapping>
+  <servlet-name>myRPCServices</servlet-name>
+  <url-pattern>/myRPCServicesURL/*</url-pattern>
+</servlet-mapping>
+}}}
 
 <p>
 This maps `/myRPCServicesURL/...` to a spring servlet which is defined in `myRPCServices-servlet.xml`.
 Note that the `/myRPCServicesURL` part of the URL is already 'consumed' by the servlet container and you should not duplicate it in
 the subsequent Spring mappings:
 </p>
-
-`<bean id="urlMapping" class="org.gwtwidgets.server.spring.GWTHandler">`
-`<property name="mappings">`
-`<map>`
-<i>`<-- Attention: We don't repeat the servlet URL, so it's <i>not</i> /myRPCServicesURL/service1 but just /service1 -->`</i>
-`<entry key="/service1" value-ref="FirstServiceBean" />`
-`<entry key="/service2" value-ref="SecondServiceBean" />`
-`<entry key="/service3" value-ref="ThirdServiceBean" />`
+{{{
+<bean id="urlMapping" class="org.gwtwidgets.server.spring.GWTHandler">
+<property name="mappings">
+<map>
+<-- Attention: We don't repeat the servlet URL, so it's not /myRPCServicesURL/service1 but just /service1 -->
+<entry key="/service1" value-ref="FirstServiceBean" />
+<entry key="/service2" value-ref="SecondServiceBean" />
+<entry key="/service3" value-ref="ThirdServiceBean" />
 ...
-`</map>`
-`</property>`
-`</bean>`
-
+</map>
+</property>
+</bean>
+}}}
 
 
 <h2><a name="Tests"></a>How do I run the unit tests?</h2> 
