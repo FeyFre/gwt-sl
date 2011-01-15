@@ -38,7 +38,7 @@ public class DummyGWTRPCServiceExporter extends GWTRPCServiceExporter {
 	private void printHeaders(HttpServletRequest request){
 		if (!log.isDebugEnabled()) return;
 		log.debug("Handling request with headers:");
-		Enumeration e = request.getHeaderNames();
+		Enumeration<String> e = request.getHeaderNames();
 		while (e.hasMoreElements()){
 			String name = e.nextElement().toString();
 			String value = request.getHeader(name);

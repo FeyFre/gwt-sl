@@ -15,7 +15,6 @@ package org.gwtwidgets.server.spring;
 
 import java.lang.reflect.Method;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 
