@@ -467,12 +467,10 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 			IOException {
 		try {
 			preprocessHTTP(request, response);
-			ServletUtils.setRequest(request);
 			ServletUtils.setResponse(response);
 			doPost(request, response);
 			return null;
 		} finally {
-			ServletUtils.setRequest(null);
 			ServletUtils.setResponse(null);
 		}
 	}
