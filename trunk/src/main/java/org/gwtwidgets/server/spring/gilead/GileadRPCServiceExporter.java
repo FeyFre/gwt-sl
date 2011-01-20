@@ -154,7 +154,7 @@ public class GileadRPCServiceExporter extends GWTRPCServiceExporter {
 				.getSerializationPolicyForSuccess(rpcRequest, service,
 						targetMethod, targetParameters, result);
 		String encodedResult = RPC.encodeResponseForSuccess(
-				rpcRequest.getMethod(), result, serializationPolicy);
+				rpcRequest.getMethod(), result, serializationPolicy, serializationFlags);
 		return encodedResult;
 	}
 
