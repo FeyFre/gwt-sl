@@ -22,6 +22,7 @@ import net.sf.gilead.gwt.GwtConfigurationHelper;
 
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPC;
+import com.google.gwt.user.server.rpc.SerializationPolicy;
 
 import org.gwtwidgets.server.spring.GWTRPCServiceExporter;
 import org.hibernate.SessionFactory;
@@ -149,8 +150,11 @@ public class GileadRPCServiceExporter extends GWTRPCServiceExporter {
 				getThreadLocalRequest().getSession(createSessionIfNotExists));
 		Object result = targetMethod.invoke(service, targetParameters);
 		result = GileadRPCHelper.parseReturnValue(result, beanManager);
-		String encodedResult = RPC.encodeResponseForSuccess(rpcRequest
-				.getMethod(), result, rpcRequest.getSerializationPolicy());
+		SerializationPolicy serializationPolicy = getSerializationPolicyProvider()
+				.getSerializationPolicyForSuccess(rpcRequest, service,
+						targetMethod, targetParameters, result);
+		String encodedResult = RPC.encodeResponseForSuccess(
+				rpcRequest.getMethod(), result, serializationPolicy);
 		return encodedResult;
 	}
 
@@ -165,7 +169,7 @@ public class GileadRPCServiceExporter extends GWTRPCServiceExporter {
 	@Override
 	protected String encodeResponseForFailure(RPCRequest rpcRequest,
 			Throwable cause) throws SerializationException {
-		Throwable throwable = (Throwable)GileadRPCHelper.parseReturnValue(
+		Throwable throwable = (Throwable) GileadRPCHelper.parseReturnValue(
 				cause, beanManager);
 		return super.encodeResponseForFailure(rpcRequest, throwable);
 	}
