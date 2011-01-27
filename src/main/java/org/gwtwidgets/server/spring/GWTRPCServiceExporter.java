@@ -280,20 +280,14 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	 * Wrapper around RPC utility invocation
 	 * @param rpcRequest RPCRequest
 	 * @param cause Exception to handle
+	 * @param targetMethod Method which threw the exception
+	 * @param targetParameters Method arguments  
 	 * @return RPC payload
 	 * @throws Exception
 	 */
-	protected String encodeResponseForFailure(RPCRequest rpcRequest, Throwable cause) throws SerializationException{
-		SerializationPolicy serializationPolicy = getSerializationPolicyProvider().getSerializationPolicyForFailure(rpcRequest, service, null, null, cause);
-		return RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause, serializationPolicy);
-	}
-
-	/**
-	 * Wrapper around RPC utility invocation
-	 * @param cause Exception to handle
-	 */
-	protected String encodeResponseForFailure(Throwable cause) throws SerializationException{
-		return RPC.encodeResponseForFailure(null, cause);
+	protected String encodeResponseForFailure(RPCRequest rpcRequest, Throwable cause, Method targetMethod, Object[] targetParameters) throws SerializationException{
+		SerializationPolicy serializationPolicy = getSerializationPolicyProvider().getSerializationPolicyForFailure(rpcRequest, service, targetMethod, targetParameters, cause);
+		return RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause, serializationPolicy, serializationFlags);
 	}
 
 	/**
@@ -308,16 +302,17 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	 *            Exception thrown
 	 * @param service
 	 * @param targetMethod
+	 * @param parameters
 	 * @param rpcRequest
 	 * @return RPC payload
 	 * @throws Exception
 	 */
-	protected String handleInvocationTargetException(InvocationTargetException e, Object service, Method targetMethod,
+	protected String handleInvocationTargetException(InvocationTargetException e, Object service, Method targetMethod, Object[] parameters,
 			RPCRequest rpcRequest) throws Exception {
 		Throwable cause = e.getCause();
 		if (!(cause instanceof RuntimeException))
 			logger.warn(cause);
-		return encodeResponseForFailure(rpcRequest, cause);
+		return encodeResponseForFailure(rpcRequest, cause, targetMethod, parameters);
 	}
 
 	/**
@@ -406,7 +401,7 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 			} catch (IllegalAccessException e) {
 				return processResponse(handleIllegalAccessException(e, service, targetMethod, rpcRequest));
 			} catch (InvocationTargetException e) {
-				return processResponse(handleInvocationTargetException(e, service, targetMethod, rpcRequest));
+				return processResponse(handleInvocationTargetException(e, service, targetMethod, targetParameters, rpcRequest));
 			} catch (UndeclaredThrowableException e) {
 				return processResponse(handleUndeclaredThrowableException(e, service, targetMethod, rpcRequest));
 			} catch (Exception e) {
@@ -429,10 +424,10 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	 * @return RPC encoded failure response
 	 * @throws SerializationException
 	 */
-	protected String handleIncompatibleRemoteServiceException(IncompatibleRemoteServiceException e)
+	protected String handleIncompatibleRemoteServiceException(IncompatibleRemoteServiceException cause)
 			throws SerializationException {
-		logger.warn(e.getMessage());
-		return encodeResponseForFailure(null, e);
+		logger.warn(cause.getMessage());
+		return RPC.encodeResponseForFailure(null, cause);
 	}
 
 	/**

@@ -23,55 +23,61 @@ import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPCRequest;
 
 /**
- * Exists only to warn developers via the override annotation of contract violations
- * in {@link GWTRPCServiceExporter} - i.e. when a method is deleted which was promised
- * to always exist for overriding purposes.
+ * Exists only to warn developers via the override annotation of contract
+ * violations in {@link GWTRPCServiceExporter} - i.e. when a method is deleted
+ * which was promised to always exist for overriding purposes.
+ * 
  * @author George Georgovassilis, g.georgovassilis[at]gmail.com
- *
+ * 
  */
-public class OverriddenGWTRPCServiceExporter extends GWTRPCServiceExporter{
-	
+public class OverriddenGWTRPCServiceExporter extends GWTRPCServiceExporter {
+
 	@Override
-	protected String handleServiceException(Exception e, Object service, Method targetMethod, RPCRequest rpcRequest) throws Exception {
+	protected String handleServiceException(Exception e, Object service,
+			Method targetMethod, RPCRequest rpcRequest) throws Exception {
 		return null;
 	}
-	
+
 	@Override
-	protected String handleIllegalAccessException(IllegalAccessException e, Object service, Method targetMethod, RPCRequest rpcRequest) {
+	protected String handleIllegalAccessException(IllegalAccessException e,
+			Object service, Method targetMethod, RPCRequest rpcRequest) {
 		return null;
 	}
-	
+
 	@Override
-	protected String handleIllegalArgumentException(IllegalArgumentException e, Object service, Method targetMethod,
-			RPCRequest rpcRequest) {
+	protected String handleIllegalArgumentException(IllegalArgumentException e,
+			Object service, Method targetMethod, RPCRequest rpcRequest) {
 		return null;
 	}
-	
+
 	@Override
-	protected String handleInvocationTargetException(InvocationTargetException e, Object service, Method targetMethod,
-			RPCRequest rpcRequest) throws Exception {
+	protected String handleInvocationTargetException(
+			InvocationTargetException e, Object service, Method targetMethod,
+			Object[] parameters, RPCRequest rpcRequest) throws Exception {
 		return null;
 	}
-	
+
 	@Override
-	protected String handleUndeclaredThrowableException(Exception e, Object service, Method targetMethod, RPCRequest rpcRequest)
+	protected String handleUndeclaredThrowableException(Exception e,
+			Object service, Method targetMethod, RPCRequest rpcRequest)
 			throws Exception {
 		return null;
 	}
-	
+
 	@Override
-	protected Method getMethodToInvoke(Method decodedMethod) throws NoSuchMethodException {
+	protected Method getMethodToInvoke(Method decodedMethod)
+			throws NoSuchMethodException {
 		return null;
 	}
-	
+
 	@Override
 	protected String handleExporterProcessingException(Exception e) {
 		return null;
 	}
 
 	@Override
-	protected String handleIncompatibleRemoteServiceException(IncompatibleRemoteServiceException e)
-			throws SerializationException {
+	protected String handleIncompatibleRemoteServiceException(
+			IncompatibleRemoteServiceException e) throws SerializationException {
 		return null;
 	}
 }

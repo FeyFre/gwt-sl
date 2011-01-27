@@ -154,24 +154,20 @@ public class GileadRPCServiceExporter extends GWTRPCServiceExporter {
 				.getSerializationPolicyForSuccess(rpcRequest, service,
 						targetMethod, targetParameters, result);
 		String encodedResult = RPC.encodeResponseForSuccess(
-				rpcRequest.getMethod(), result, serializationPolicy, serializationFlags);
+				rpcRequest.getMethod(), result, serializationPolicy,
+				serializationFlags);
 		return encodedResult;
 	}
 
 	@Override
-	protected String encodeResponseForFailure(Throwable cause)
+	protected String encodeResponseForFailure(RPCRequest rpcRequest,
+			Throwable cause, Method targetMethod, Object[] targetParameters)
 			throws SerializationException {
 		Throwable throwable = (Throwable) GileadRPCHelper.parseReturnValue(
 				cause, beanManager);
-		return super.encodeResponseForFailure(throwable);
+		return super.encodeResponseForFailure(rpcRequest, throwable, targetMethod,
+				targetParameters);
 	}
 
-	@Override
-	protected String encodeResponseForFailure(RPCRequest rpcRequest,
-			Throwable cause) throws SerializationException {
-		Throwable throwable = (Throwable) GileadRPCHelper.parseReturnValue(
-				cause, beanManager);
-		return super.encodeResponseForFailure(rpcRequest, throwable);
-	}
 
 }
