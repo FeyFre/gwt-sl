@@ -7,6 +7,7 @@ GWT-SL 1.2
 * Support for obfuscated RPC classifiers
 * Support checking for X-GWT-Permutation headers (thanks Josh Drummond)
 * Deprecated ServletUtils.setRequest, using Spring support classes not (requires use of DispatcherServlet)
+* Breaking change: GWTRPCServiceExporter.encodeResponseForFailure has two new arguments
 
 GWT-SL 1.1c
 ---------------------------
