@@ -103,6 +103,18 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	
 	protected boolean shouldCheckPermutationStrongName = false;
 	
+	protected ModulePathTranslation modulePathTranslation = new ModulePathTranslation() {
+		
+		public String computeModuleBaseURL(HttpServletRequest request,
+				String moduleBaseURL, String strongName) {
+			return moduleBaseURL;
+		}
+	};
+	
+	public void setModulePathTranslation(ModulePathTranslation modulePathTranslation) {
+		this.modulePathTranslation = modulePathTranslation;
+	}
+
 	@Override
 	protected void checkPermutationStrongName(){
 		if (shouldCheckPermutationStrongName)
@@ -575,8 +587,16 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 	}
 	
 	@Override
+	protected SerializationPolicy doGetSerializationPolicy(
+			HttpServletRequest request, String moduleBaseURL, String strongName) {
+		String newModuleBaseURL = modulePathTranslation.computeModuleBaseURL(request, moduleBaseURL, strongName);
+		return super.doGetSerializationPolicy(request, newModuleBaseURL, strongName);
+	}
+	
+	@Override
 	public String toString() {
 		return beanName;
 	}
+	
 
 }

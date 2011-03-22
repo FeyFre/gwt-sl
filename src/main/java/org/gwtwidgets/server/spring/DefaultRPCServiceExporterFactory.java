@@ -14,6 +14,8 @@
 
 package org.gwtwidgets.server.spring;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.gwt.user.client.rpc.impl.AbstractSerializationStream;
 
 /**
@@ -27,6 +29,19 @@ public class DefaultRPCServiceExporterFactory implements RPCServiceExporterFacto
 	private SerializationPolicyProvider serializationPolicyProvider = new DefaultSerializationPolicyProvider();
 	private int serializationFlags = AbstractSerializationStream.DEFAULT_FLAGS;
 	private boolean shouldCheckPermutationStrongName = false;
+	private ModulePathTranslation modulePathTranslation = new ModulePathTranslation() {
+		
+		public String computeModuleBaseURL(HttpServletRequest request,
+				String moduleBaseURL, String strongName) {
+			return moduleBaseURL;
+		}
+	};
+	
+	
+	public void setModulePathTranslation(ModulePathTranslation modulePathTranslation){
+		this.modulePathTranslation = modulePathTranslation;
+	}
+	
 	
 	public boolean isShouldCheckPermutationStrongName() {
 		return shouldCheckPermutationStrongName;
@@ -69,6 +84,7 @@ public class DefaultRPCServiceExporterFactory implements RPCServiceExporterFacto
 		exporter.setSerializationPolicyProvider(serializationPolicyProvider);
 		exporter.setSerializationFlags(serializationFlags);
 		exporter.setShouldCheckPermutationStrongName(shouldCheckPermutationStrongName);
+		exporter.setModulePathTranslation(modulePathTranslation);
 		return exporter;
 	}
 
