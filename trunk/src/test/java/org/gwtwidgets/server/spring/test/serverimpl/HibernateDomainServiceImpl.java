@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gwtwidgets.server.spring.GWTRequestMapping;
 import org.gwtwidgets.server.spring.test.domain.Discount;
 import org.gwtwidgets.server.spring.test.domain.DomainException;
 import org.gwtwidgets.server.spring.test.domain.Product;
@@ -28,12 +27,14 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
 /**
  * Simple service that returns objects managed by hibernate.
  * @author George Georgovassilis, g.georgovassilis[at]gmail.com
  *
  */
-@GWTRequestMapping("/domain")
+@RemoteServiceRelativePath("/domain")
 public class HibernateDomainServiceImpl implements HibernateDomainService, InitializingBean{
 
 	private SessionFactory sessionFactory;
