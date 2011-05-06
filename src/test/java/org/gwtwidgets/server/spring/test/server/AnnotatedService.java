@@ -13,14 +13,15 @@
  */
 package org.gwtwidgets.server.spring.test.server;
 
-import org.gwtwidgets.server.spring.GWTRequestMapping;
+
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * Annotated service interface for test service
  * @author george.georgovassilis[at]gmail.com
  *
  */
-@GWTRequestMapping("/service")
+@RemoteServiceRelativePath("/service")
 public interface AnnotatedService extends ServiceTest{
 
 }

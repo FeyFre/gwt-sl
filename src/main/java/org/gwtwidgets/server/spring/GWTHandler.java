@@ -26,6 +26,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * The GWTHandler implements a Spring {@link HandlerMapping} which maps RPC from
@@ -91,14 +92,17 @@ public class GWTHandler extends AbstractUrlHandlerMapping implements
 				continue;
 			final Class<?> beanClass = service.getClass();
 
-			final GWTRequestMapping requestMapping = ReflectionUtils
-					.findAnnotation(beanClass, GWTRequestMapping.class);
+			final RemoteServiceRelativePath requestMapping = ReflectionUtils
+					.findAnnotation(beanClass, RemoteServiceRelativePath.class);
 			if (requestMapping == null) {
 				continue;
 			}
 
 			// Create serviceExporter to bind to
 			String mapping = requestMapping.value();
+			if (mapping.contains("/")){
+				mapping = mapping.substring(mapping.lastIndexOf("/"));
+			}
 			if (getMappings().containsKey(mapping))
 				logger.warn("Bean '" + mapping
 						+ "' already in mapping, skipping.");
