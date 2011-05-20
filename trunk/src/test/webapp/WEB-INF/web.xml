@@ -89,30 +89,6 @@
 	</servlet>
 
 	<!-- 
-		Mapping Gilead service
-	-->
-
-	<servlet>
-		<servlet-name>gilead</servlet-name>
-		<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<!-- 
-		Mapping annotated version of Gilead service
-	-->
-
-	<servlet>
-		<servlet-name>gileadannotated</servlet-name>
-		<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<!-- 
 		Mapping the default servlet for static resource delivery
 	-->
 	<servlet>
@@ -145,16 +121,6 @@
 	<servlet-mapping>
 		<servlet-name>stream</servlet-name>
 		<url-pattern>/stream/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>gilead</servlet-name>
-		<url-pattern>/gilead/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>gileadannotated</servlet-name>
-		<url-pattern>/gileadannotated/*</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>

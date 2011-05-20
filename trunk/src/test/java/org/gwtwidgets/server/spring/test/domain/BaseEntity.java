@@ -12,16 +12,14 @@
  */
 package org.gwtwidgets.server.spring.test.domain;
 
-import net.sf.gilead.pojo.gwt.LightEntity;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Base entity for hibernate managed objects in unit tests
+ * Base entity for domain objects in unit tests
  * @author George Georgovassilis g.georgovassilis[at]gmail.com
  *
  */
-public abstract class BaseEntity extends LightEntity implements IsSerializable{
+public abstract class BaseEntity implements IsSerializable{
 
 	private int id;
 

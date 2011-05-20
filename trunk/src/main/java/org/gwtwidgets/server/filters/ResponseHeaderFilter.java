@@ -92,7 +92,6 @@ public class ResponseHeaderFilter implements Filter {
 		chain.doFilter(request, response);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void init(FilterConfig conf) throws ServletException {
 		int size = getSize(conf.getInitParameterNames());
 		if (conf.getInitParameter(URL_PATTERN) != null) {

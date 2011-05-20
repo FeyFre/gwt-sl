@@ -14,11 +14,7 @@
 		<include name="spring-beans-${spring.version}.jar" />
 		<include name="servlet-api-${servlet.version}.jar" />
 		<include name="commons-logging-${commons-logging.version}.jar" />
-		<include name="gilead-core-${gilead.version}.jar" />
-		<include name="gilead-hibernate-${gilead.version}.jar" />
-		<include name="gilead4gwt-${gilead.version}.jar" />
 		<include name="spring-web-servlet-${spring.version}.jar" />
-		<include name="hibernate-${hibernate.version}.jar" />
 		<include name="spring-web-${spring.version}.jar" />
 		<include name="aopalliance-${aopalliance.version}.jar" />
 	</fileset>
@@ -44,12 +40,7 @@
 		<include name="${lib.dir}/spring-transaction-${spring.version}.jar" />
 		<include name="${lib.dir}/spring-orm-${spring.version}.jar" />
 		<include name="${lib.dir}/hsqldb-${hsqldb.version}.jar" />
-		<include name="${lib.dir}/gilead-core-${gilead.version}.jar" />
-		<include name="${lib.dir}/gilead-hibernate-${gilead.version}.jar" />
-		<include name="${lib.dir}/gilead4gwt-${gilead.version}.jar" />
 		<include name="${lib.dir}/beanlib-${beanlib.version}.jar" />
-		<include name="${lib.dir}/beanlib-hibernate-${beanlib.version}.jar" />
-		<include name="${lib.dir}/hibernate-${hibernate.version}.jar" />
 		<include name="${lib.dir}/dom4j-${dom4j.version}.jar" />
 		<include name="${lib.dir}/commons-logging-${commons-logging.version}.jar" />
 		<include name="${lib.dir}/commons-lang-${commons-lang.version}.jar" />
@@ -76,16 +67,19 @@
 		<include name="${lib.dir}/spring-core-${spring.version}.jar" />
 		<include name="${lib.dir}/spring-test-${spring.version}.jar" />
 		<include name="${lib.dir}/spring-web-${spring.version}.jar" />
+		<include name="${lib.dir}/spring-asm-${spring.version}.jar" />
+		<include name="${lib.dir}/spring-expression-${spring.version}.jar" />
+		<include name="${lib.dir}/spring-aop-${spring.version}.jar" />
 		<include name="${lib.dir}/spring-beans-${spring.version}.jar" />
 		<include name="${lib.dir}/spring-context-${spring.version}.jar" />
 		<include name="${lib.dir}/spring-web-servlet-${spring.version}.jar" />
+		<include name="${lib.dir}/spring-jdbc-${spring.version}.jar" />
+		<include name="${lib.dir}/spring-transaction-${spring.version}.jar" />
 		<include name="${lib.dir}/junit-${junit.version}.jar" />
 		<include name="${lib.dir}/servlet-api-${servlet.version}.jar" />
 		<include name="${lib.dir}/commons-logging-${commons-logging.version}.jar" />
-		<include name="${lib.dir}/hibernate-${hibernate.version}.jar" />
 		<include name="${lib.dir}/hsqldb-${hsqldb.version}.jar" />
 		<include name="${lib.dir}/beanlib-${beanlib.version}.jar" />
-		<include name="${lib.dir}/beanlib-hibernate-${beanlib.version}.jar" />
 		<include name="${lib.dir}/jta-${jta.version}.jar" />
 		<include name="${lib.dir}/log4j-${log4j.version}.jar" />
 		<include name="${lib.dir}/dom4j-${dom4j.version}.jar" />
@@ -93,14 +87,13 @@
 		<include name="${lib.dir}/cglib-nodep-${cglib.version}.jar" />
 		<include name="${lib.dir}/aspectjrt-${aspectj.version}.jar" />
 		<include name="${lib.dir}/aspectjweaver-${aspectj.version}.jar" />
+		<include name="${lib.dir}/aopalliance-${aopalliance.version}.jar" />
 		<include name="${lib.dir}/slf4j-api-${slf4j.version}.jar" />
 		<include name="${lib.dir}/slf4j-log4j12-${slf4j.version}.jar" />
 		<include name="${lib.dir}/javassist-${javassist.version}.jar" />
 		<include name="${lib.dir}/jboss-serialization-${jboss-serialization.version}.jar" />
 		<include name="${lib.dir}/trove-${trove.version}.jar" />
 		<include name="${target.dir}/jar/gwt-sl-${SL.version}.jar" />
-		<include name="${lib.dir}/gilead-core-${gilead.version}.jar" />
-		<include name="${lib.dir}/gilead4gwt-${gilead.version}.jar" />
 	</fileset>
 
 	<path id="libs-for-jar">
@@ -115,8 +108,6 @@
 		<pathelement path="${src}/main/java" />
 		<pathelement path="${lib.dir}/gwt-dev-windows-${gwt.version}.jar" />
 		<pathelement path="${lib.dir}/gwt-user-${gwt.version}.jar" />
-		<pathelement path="${lib.dir}/hibernate-annotations-${hibernate.annotations.version}.jar" />
-		<pathelement path="${lib.dir}/hibernate-${hibernate.version}.jar" />
 		<pathelement path="${lib.dir}/xstream-${xstream.version}.jar" />
 		<pathelement path="${lib.dir}/commons-lang-${commons-lang.version}.jar" />
 		<pathelement path="${target.dir}/classes" />
@@ -236,25 +227,10 @@
 	</target>
 
 	<target name="test" depends="compile,compile-test" description="Perform unit tests">
-		<echo>Checking for basic Junit availability. If this test fails, then junit may not be setup correctly or not all build targets have succeeded.</echo>
+		<echo>Running unit tests</echo>
 		<junit fork="true" haltonfailure="true" showoutput="true">
 			<classpath refid="libs-for-test" />
-			<test name="org.gwtwidgets.server.spring.test.TestJunit" />
-		</junit>
-		<echo>Running TestHandler</echo>
-		<junit fork="true" haltonfailure="true" showoutput="true">
-			<classpath refid="libs-for-test" />
-			<test name="org.gwtwidgets.server.spring.test.TestHandler" />
-		</junit>
-		<echo>Running TestExporter</echo>
-		<junit fork="true" haltonfailure="true" showoutput="true">
-			<classpath refid="libs-for-test" />
-			<test name="org.gwtwidgets.server.spring.test.TestRPCExporter" />
-		</junit>
-		<echo>Running Hibernate4GWT (gilead) Test</echo>
-		<junit fork="true" haltonfailure="true" showoutput="true">
-			<classpath refid="libs-for-test" />
-			<test name="org.gwtwidgets.server.spring.test.TestGilead" />
+			<test name="org.gwtwidgets.server.spring.test.AllTests" />
 		</junit>
 	</target>
 

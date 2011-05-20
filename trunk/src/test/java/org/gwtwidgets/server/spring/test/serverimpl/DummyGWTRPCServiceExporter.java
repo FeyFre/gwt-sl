@@ -34,7 +34,6 @@ public class DummyGWTRPCServiceExporter extends GWTRPCServiceExporter {
 
 	Log log = LogFactory.getLog(getClass());
 	
-	@SuppressWarnings("unchecked")
 	private void printHeaders(HttpServletRequest request){
 		if (!log.isDebugEnabled()) return;
 		log.debug("Handling request with headers:");

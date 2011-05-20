@@ -22,12 +22,6 @@ import org.gwtwidgets.client.stream.Message;
 import org.gwtwidgets.client.stream.StreamCallback;
 import org.gwtwidgets.client.stream.HtmlStreamReader;
 import org.gwtwidgets.server.spring.test.domain.CustomException;
-import org.gwtwidgets.server.spring.test.domain.Discount;
-import org.gwtwidgets.server.spring.test.domain.DomainException;
-import org.gwtwidgets.server.spring.test.domain.Product;
-import org.gwtwidgets.server.spring.test.domain.ProductOrder;
-import org.gwtwidgets.server.spring.test.server.HibernateDomainService;
-import org.gwtwidgets.server.spring.test.server.HibernateDomainServiceAsync;
 import org.gwtwidgets.server.spring.test.server.ServiceTest;
 import org.gwtwidgets.server.spring.test.server.ServiceTestAsync;
 
@@ -117,21 +111,12 @@ public class ClientApplication implements EntryPoint{
 		return service;
 	}
 	
-	HibernateDomainServiceAsync getHibernateService(boolean annotated){
-		HibernateDomainServiceAsync service = (HibernateDomainServiceAsync) GWT.create(HibernateDomainService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) service;
-		String moduleRelativeURL = GWT.getModuleBaseURL();
-		moduleRelativeURL += annotated?"../gileadannotated/domain":"../gilead/domain";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		return service;
-		
-	}
-
 	void testsDone() {
 		log("<h2>Tests finished successfully</h2>");
 		logTiming("Tests finished in ");
 	}
 
+	//check
 	void testAdd() {
 		log("<h2>Testing " + testLabel[testIndex] + "</h2>");
 		log("Test1: invoking add(3,4)");
@@ -152,6 +137,7 @@ public class ClientApplication implements EntryPoint{
 		});
 	}
 
+	//check
 	void testSession() {
 
 		final String newString = newRandomString();
@@ -173,6 +159,7 @@ public class ClientApplication implements EntryPoint{
 		});
 	}
 
+	//check
 	void testSessionAlt() {
 
 		final String newString = newRandomString();
@@ -194,6 +181,7 @@ public class ClientApplication implements EntryPoint{
 		});
 	}
 
+	//check
 	void testExpectedValue(final String expectedSessionValue) {
 
 		log("Test4: Retrieving a current session attribute and storing a new one.");
@@ -218,6 +206,7 @@ public class ClientApplication implements EntryPoint{
 		});
 	}
 
+	//check
 	void testException() {
 
 		log("Test5: Testing for exception translation.");
@@ -242,6 +231,7 @@ public class ClientApplication implements EntryPoint{
 		}));
 	}
 	
+	//check
 	void testCustomException() {
 
 		log("Test5b: Testing for custom exception serialisability.");
@@ -273,6 +263,7 @@ public class ClientApplication implements EntryPoint{
 	}
 
 
+	//check
 	void testGWTSerialisable() {
 		log("<h2>Testing IsSerializable compatibility</h2>");
 		ServiceTestAsync test = getService();
@@ -298,6 +289,7 @@ public class ClientApplication implements EntryPoint{
 		});
 	}
 
+	//check
 	void testJavaSerialisable() {
 		log("<h2>Testing Serializable compatibility</h2>");
 		ServiceTestAsync test = getService();
@@ -316,83 +308,14 @@ public class ClientApplication implements EntryPoint{
 					return;
 				}
 				log("Test success");
-				testGilead(false);
+				testResponseCaching();
 			}
 
 		});
 	}
 	
-	void testGilead(final boolean annotated){
-		if (annotated)
-			log("<h2>Testing Gilead with annotations</h2>");
-		else
-			log("<h2>Testing Gilead without annotations</h2>");
-		HibernateDomainServiceAsync test = getHibernateService(annotated);
-		final Discount stub = new Discount();
-		stub.setId(1);
-		
-		test.getOrder(1, new AsyncCallback<ProductOrder>() {
-
-			public void onFailure(Throwable exception) {
-				fail("Test failed:" + exception, exception);
-			}
-
-			public void onSuccess(ProductOrder  order) {
-				if (order == null){
-					fail("Expected back a ProductOrder, return value was null",null);
-					return;
-				}
-				if (order.getId()!=1){
-					fail("Expected ProductOrder id 1, return value was "+order.getId(), null);
-					return;
-				}
-				if (order.getProducts()==null){
-					fail("Expected order list, return value was null", null);
-					return;
-				}
-				if (order.getProducts().size()!=2){
-					fail("Expected two products in order list, return value was "+ order.getProducts().size(), null);
-					return;
-				}
-				log("Products in orderlist:");
-				for (Product p:order.getProducts()){
-					log(p+"");
-					if (!p.getDiscounts().contains(stub))
-						fail("Product "+p+" does not contain discount 10% sales", null);
-				}
-				
-				log("Test success");
-				if (annotated)
-					testGileadExceptions();
-				else testGilead(true);
-			}
-		});
-	}
 	
-	void testGileadExceptions(){
-		log("<h2>Testing Gilead exception serialization</h2>");
-		HibernateDomainServiceAsync test = getHibernateService(false);
-		test.throwProductException(new AsyncCallback<Object>() {
-
-			public void onFailure(Throwable caught) {
-				log("Exception received");
-				DomainException exception = (DomainException)caught;
-				Product p = exception.getProduct();
-				if (p == null)
-					fail("Payload is empty", null);
-				else{
-					log("Test succeeded");
-					testResponseCaching();
-				}
-			}
-
-			public void onSuccess(Object result) {
-				fail("Expected exception", null);
-			}
-		});
-	}
-	
-	
+	//check
 	void testResponseCaching(){
 		log("<h2>Testing that RPC responses are not cached</h2>");
 		final ServiceTestAsync test = getService();

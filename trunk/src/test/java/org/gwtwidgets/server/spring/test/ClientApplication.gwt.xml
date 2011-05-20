@@ -16,16 +16,9 @@
 <module>
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name="com.google.gwt.http.HTTP"/>
-	<inherits name="net.sf.gilead.Gilead4Gwt"/>
 	<inherits name="org.gwtwidgets.Stream"/>
 	<entry-point class="org.gwtwidgets.server.spring.test.client.ClientApplication"/>
 	
-	<!-- Use with dynamic proxy mode 
-	<generate-with class="net.sf.gilead.proxy.gwt.Gwt15ProxyGenerator">
-		<when-type-assignable class="com.google.gwt.user.client.rpc.IsSerializable" />
-	</generate-with>
-	 -->
-
 	<source path="domain"/>
 	<source path="client"/>
 	<source path="server"/>
