@@ -84,11 +84,9 @@ public class GWTSpringController extends RemoteServiceServlet implements Servlet
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			preprocessHTTP(request, response);
-			ServletUtils.setRequest(request);
 			ServletUtils.setResponse(response);
 			doPost(request, response);
 		} finally {
-			ServletUtils.setRequest(null);
 			ServletUtils.setResponse(null);
 		}
 		return null;

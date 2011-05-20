@@ -46,7 +46,7 @@ public class TestHandler extends BaseTest {
 
 	@Override
 	protected void setUp() throws Exception {
-
+		super.setUp();
 		ServletContext servletContext = new MockServletContext(
 				new FileSystemResourceLoader());
 		requestService = new MockHttpServletRequest("PUT", "/service");
@@ -55,7 +55,12 @@ public class TestHandler extends BaseTest {
 		applicationContext.setConfigLocations(new String[] {
 				"src/test/webapp/WEB-INF/handler-servlet.xml",
 				"src/test/webapp/WEB-INF/applicationContext.xml" });
+		try{
 		applicationContext.refresh();
+		}
+		catch (Throwable e){
+			e.printStackTrace();
+		}
 		handler = (GWTHandler) applicationContext.getBean("urlMapping", GWTHandler.class);
 	}
 

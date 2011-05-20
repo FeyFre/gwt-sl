@@ -513,7 +513,7 @@ public class GWTRPCServiceExporter extends RemoteServiceServlet implements RPCSe
 						+ "nor were any service interfaces specified. RPC access to *all* object methods is allowed.");
 		}
 		if (servletContext == null){
-			logger.warn("No servlet context found. You should declare a GWTRPCServiceExporter, GileadRPCServiceExporter or GWTHandler in a servlet context and not the application context.");
+			logger.warn("No servlet context found. You should declare a GWTRPCServiceExporter or GWTHandler in a servlet context and not the application context.");
 		}
 	}
 

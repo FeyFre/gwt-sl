@@ -15,7 +15,7 @@ package org.gwtwidgets.server.spring.test.domain;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Custom exception which contains a hibernate managed domain object. 
+ * Custom exception which contains a domain object. 
  * @author George Georgovassilis g.georgovassilis[at]gmail.com
  *
  */

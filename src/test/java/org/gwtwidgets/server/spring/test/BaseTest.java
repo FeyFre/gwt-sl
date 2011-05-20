@@ -18,6 +18,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.gwtwidgets.server.spring.ServletUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import junit.framework.TestCase;
 
 /**
@@ -41,4 +47,14 @@ public abstract class BaseTest extends TestCase{
 		return new String(b, "UTF-8");
 	}
 
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		// need to override our own request
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		ServletUtils.setResponse(response);
+	}
+	
 }
