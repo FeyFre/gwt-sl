@@ -183,11 +183,7 @@ The Server Library for GWT (in short SL) is a collection of Java server side com
 with the current focus on the Spring framework by facilitating publishing of Spring beans as RPC services. The main
 binary dependencies are GWT 2.0 and Spring 2.5.
 </p>
-<p>The main features of this library are:</p>
-<ul>
-<li>Exporting POJOs as services to GWT's PRC</li>
-<li>Integration of Gilead for passing Hibernate-managed objects through RPC</li>
-</ul>
+<p>The main features of this library consists in exporting POJOs in a number of ways as services to GWT's PRC</p>
 <p>
 The Spring Framework is an established component framework for web applications that span 
 authentication, database access and complex page flow. Through its aspect oriented approach 
@@ -527,9 +523,7 @@ authorisation based on session attributes) and advice applied on services (i.e. 
 If you require a different functionality (for example with exception translation) to be
 wrapped around your services than the one provided by the default <code>GWTRPCServiceExporter</code> which is used
 by the <code>GWTHandler</code> you can inject your own implementation of a <code>RPCServiceExporter</code> by providing
-a <code>RPCServiceExporterFactory</code> which may be of interest to Gilead users as it allows services
-to be wrapped with a <code>GileadRPCServiceExporter</code> instead of the plain <code>RPCServiceExporter</code>. For further
-details please consult <a href="#Hibernate4GWT">4.3 Using Gilead</a>.
+a <code>RPCServiceExporterFactory</code>.
 </p>
 <h2><a name="GWTSpringController"></a>3.3 Extending a base class - GWTSpringController</h2>
 <p>
@@ -776,162 +770,7 @@ and glue it to the service:
 
 <h2><a name="Hibernate4GWT"></a>4.3 Using Gilead (Hibernate4GWT)</h2>
 <p>
-<a href="http://noon.gilead.free.fr/gilead/">Gilead</a> is a library that moves 
-Hibernate managed objects via RPC between a GWT client and a server. 
-The SL incorporates Gilead via the <code>GileadRPCServiceExporter</code> which can 
-be used similar to the <code>GWTRPCServiceExporter</code>. With regard to domain objects,
-Gilead supports two modes of operation: the light entity mode where domain objects need to extend the
-<code>LightEntity</code> class and the dynamic proxy mode. For serveral reasons, you are <i>strongly</i>
-advised to stick with the light entity mode, though dynamic proxy mode is possible (more on that later).  
-</p>
-<h3><a name="LightEntityMode"></a>4.3.1 Light Entity Mode</h3>
-<p>
-A simple setup which uses the <code>GileadRPCServiceExporter</code> looks like this:
-</p>
-<pre>
-<samp>&lt;!--
-That's the business service which returns and or accepts Hibernate managed objects.
- --&gt;</samp>
-&lt;bean id="HibernateDomainService" class="org.gwtwidgets.server.spring.test.serverimpl.HibernateDomainServiceImpl"&gt;
-	&lt;property name="sessionFactory" ref="SessionFactory"/&gt;		
-&lt;/bean&gt;
-
-<samp>&lt;!--
-The SL's GileadRPCServiceExporter combines Gilead's HibernateBeanManager with the
-business service and exports it's facade via RPC.
---&gt;</samp>
-
-&lt;bean id="GileadRPCService" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter"&gt;
-	&lt;property name="sessionFactory" ref="SessionFactory" /&gt;
-	&lt;property name="service" ref="HibernateDomainService" /&gt;
-&lt;/bean&gt;
-
-<samp>&lt;!--
-This is a simple Spring managed Hibernate session factory.
- --&gt;</samp>
- 
-&lt;bean id="SessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean"&gt;
-	...
-&lt;/bean&gt;
-	
-</pre>
-<p>
-The same example, this time with annotated services and the <code>GWTHandler</code>:
-</p>
-<pre>
-	<samp>&lt;!-- 
-		Example on how to use the GileadRPCServiceExporter which combines Gilead's (formerly hibernate4gwt)
-		HibernateBeanManager with a GWTRPCServiceExporter. This servlet loads an in-memory
-		HSQLDB.
-	--&gt;</samp>
-	&lt;bean
-		class="org.gwtwidgets.server.spring.GWTHandler" depends-on="HibernateDomainService"&gt;
-		&lt;property name="serviceExporterFactory"&gt;
-			&lt;bean class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporterFactory"&gt;
-				&lt;lookup-method name="create" bean="GileadRPCServiceExporterPrototype"/&gt;
-			&lt;/bean&gt;
-		&lt;/property&gt;
-	&lt;/bean&gt;
-	
-	<samp>&lt;!-- Factory for creating RPC wrappers that can serialise Hibernate managed objects --&gt;</samp>
-	&lt;bean id="GileadRPCServiceExporterPrototype" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter" scope="prototype"&gt;
-		&lt;property name="beanManager" ref="HibernateBeanManager"/&gt;
-		<samp>&lt;!-- Use with dynamic proxy mode 
-		&lt;property name="usingProxyClassLoader" value="true"/&gt;
-		 --&gt;</samp>
-	&lt;/bean&gt;
-	
-	<samp>&lt;!-- This is Gilead boilerplate --&gt;</samp>
-	&lt;bean id="PojoStore"
-		class="net.sf.gilead.core.store.stateless.StatelessProxyStore"/&gt;
-	
-	&lt;bean id="HibernateUtil"
-		class="net.sf.gilead.core.hibernate.HibernateUtil"&gt;
-		&lt;property name="sessionFactory" ref="SessionFactory"/&gt;
-	&lt;/bean&gt;
-
-	&lt;bean id="HibernateBeanManager"
-		class="net.sf.gilead.core.PersistentBeanManager"&gt;
-		&lt;property name="proxyStore" ref="PojoStore" /&gt;
-		&lt;property name="persistenceUtil" ref="HibernateUtil"/&gt;
-		<samp>&lt;!-- Use with dynamic proxy mode 
-		&lt;property name="classMapper" ref="ClassMapper"/&gt;#
-		 --&gt;</samp>
-	&lt;/bean&gt;
-	
-	<samp>&lt;!-- Use with dynamic proxy mode 
-	&lt;bean id="ClassMapper" class="net.sf.gilead.core.beanlib.mapper.ProxyClassMapper"&gt;	
-		&lt;property name="persistenceUtil" ref="HibernateUtil"/&gt;
-		&lt;property name="java5" value="true"/&gt;
-	&lt;/bean&gt;
-	 --&gt;</samp>
-	
-	<samp>&lt;!--
-	Setup transaction handling, Sessionfactories, Datasources etc 
-	 --&gt;</samp>
-	...
-	
-	<samp>&lt;!--
-	Uppon initialisation, this service adds a few entries to the mapped Hibernate database used later on
-	by the client application.
-	 --&gt;</samp>
-	&lt;bean id="HibernateDomainService" class="org.gwtwidgets.server.spring.test.serverimpl.HibernateDomainServiceAnnotated"&gt;
-		&lt;property name="sessionFactory" ref="SessionFactory"/&gt;		
-	&lt;/bean&gt;
-</pre>
-<p>
-Note that for a fully functional setup transaction support should be added to the service beans.
-For complete examples consult <code>gilead-servlet.xml</code> and <code>gileadannotated-servlet.xml</code> from the test package.
-</p>
-<h3><a name="DynamicProxyMode"></a>4.3.2 Dynamic Proxy Mode</h3>
-<p>
-Dynamic proxy mode for domain objects has some prerequisites:
-</p>
-<p>
-<strong>IsSerializable is mandatory:</strong>
-Domain objects must implement <code>IsSerializable</code>. Implementing <code>Serializable</code> won't do.
-</p>
-<p>
-<strong>No serialization policy file:</strong>
-You cannot have any serialization policy. Delete the generated serialization policy prior to deploying.
-A consequence of the missing serialization policy is that any DTOs or Exceptions must implement <code>IsSerializable</code>.
-</p>
-<p>
-<strong>Generator:</strong>
-The <code>*.gwt.xml</code> module must reference Gilead's generator:
-<pre>
-	&lt;generate-with class="net.sf.gilead.proxy.gwt.Gwt15ProxyGenerator"&gt;
-		&lt;when-type-assignable class="com.google.gwt.user.client.rpc.IsSerializable" /&gt;
-	&lt;/generate-with&gt;
-</pre>
-</p>
-<p>
-<strong>GWT.create:</strong>
-You have to use <code>GWT.create(DomainClass.class)</code> instead of <code>new DomainClass()</code> when
-creating instances of Hibernate managed objects on the client side.
-</p>
-<p>
-<strong>ProxyClassMapper:</strong>
-You need to use the <code>ProxyClassMapper</code> and tell the <code>GileadRPCServiceExporter</code> to use it.
-<pre>
-	&lt;bean id="ClassMapper" class="net.sf.gilead.core.beanlib.mapper.ProxyClassMapper"&gt;	
-		&lt;property name="persistenceUtil" ref="HibernateUtil"/&gt;
-		&lt;property name="java5" value="true"/&gt;
-	&lt;/bean&gt;
-
-	&lt;bean id="HibernateBeanManager"
-		class="net.sf.gilead.core.PersistentBeanManager"&gt;
-		&lt;property name="proxyStore" ref="PojoStore" /&gt;
-		&lt;property name="persistenceUtil" ref="HibernateUtil"/&gt;
-		&lt;property name="classMapper" ref="ClassMapper"/&gt;
-	&lt;/bean&gt;
-
-	&lt;bean id="GileadDomainService" class="org.gwtwidgets.server.spring.gilead.GileadRPCServiceExporter"&gt;
-		&lt;property name="beanManager" ref="HibernateBeanManager" /&gt;
-		&lt;property name="service" ref="HibernateDomainService" /&gt;
-		&lt;property name="usingProxyClassLoader" value="true"/&gt;
-	&lt;/bean&gt;
-</pre>
+Integration with Gilead and Hibernate has been removed in SL 1.3 as the current GWT provides a better aproach based on its RequestFactory. 
 </p>
 
 <h2><a name="HTTPHeaders"></a>4.4 HTTP Headers</h2>

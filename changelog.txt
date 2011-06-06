@@ -1,8 +1,8 @@
 GWT-SL 1.3
 ---------------------------
 * Breaking change: @GWTRequestMapping replaced with @RemoteServiceRelativePath (thanks Jens Rohloff)
-* Removed support for Gilead
-* Mavenized project
+* Removed support for Gilead 
+* Mavenized project (Thanks Dmitry Matykhin)
 
 
 GWT-SL 1.2
