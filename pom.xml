@@ -11,24 +11,18 @@
 	<name>SL for GWT</name>
 	<url>http://gwt-widget.sourceforge.net/</url>
 	<scm>
-		<connection>scm:svn:https://gwt-widget.svn.sourceforge.net/svnroot/gwt-widget/server/branches/1.1</connection>
-		<developerConnection>scm:svn:https://gwt-widget.svn.sourceforge.net/svnrootgwt-widget/server/branches/1.1</developerConnection>
-		<url>http://gwt-widget.svn.sourceforge.net/viewvc/gwt-widget/server/branches/1.1</url>
+		<connection>scm:svn:http://gwt-sl.googlecode.com/svn/tags/1.3_RC1</connection>
+		<developerConnection>scm:svn:https://gwt-sl.googlecode.com/svn/tags/1.3_RC1</developerConnection>
+		<url>http://code.google.com/p/gwt-sl/source/browse/</url>
 	</scm>
-	<version>1.1</version>
+	<version>1.3_RC1</version>
 	<description>
 		The Server Library for GWT is a collection of Java server side components for the Google Web Toolkit AJAX framework with the focus on the Spring framework by facilitating publishing of Spring beans as RPC services with support for Hibernate-manged entities.
 	</description>
 	<issueManagement>
-		<system>source forge tracker</system>
-		<url>http://sourceforge.net/tracker/?group_id=169692</url>
+		<system>Google Code</system>
+		<url>http://code.google.com/p/gwt-sl/issues/list</url>
 	</issueManagement>
-	<distributionManagement>
-		<site>
-			<id>sourceforge.net</id>
-			<url>scp://shell.sourceforge.net/home/groups/g/gw/gwt-widget/htdocs/gwt-sl-maven</url>
-		</site>
-	</distributionManagement>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -125,6 +119,16 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
+		      <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.8.1</version>
+			<configuration>
+			  <excludes>
+			    <exclude>**/TestResourceLoader.java</exclude>
+			  </excludes>
+			</configuration>
+		      </plugin>
 
                         <plugin>
                           <groupId>org.apache.maven.plugins</groupId>
