@@ -48,6 +48,7 @@ public class ServletUtils {
 	 */
 	public static HttpServletRequest getRequest() {
 		return
+			
             ((ServletRequestAttributes)
              RequestContextHolder.getRequestAttributes()).getRequest(); 	
 		}
@@ -65,11 +66,10 @@ public class ServletUtils {
 	/**
 	 * Assign the current servlet request to a thread local variable. Valid only
 	 * if used inside the invoking thread scope.
-	 * @deprecated Does not perform any operation
 	 * @param request
 	 */
 	public static void setRequest(HttpServletRequest request) {
-		throw new RuntimeException("setRequest has been deprecated");
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 	}
 
 	/**
